@@ -48,7 +48,7 @@ public class PlayerWeapon : MonoBehaviour
         if (!AllowedToShoot)
             return;
 
-        AudioManager.Instance.PlayShootSFX();
+        AudioManager.Instance?.PlayShootSFX();
         weaponAnimator.Play(animatorShootClipName);
         Projectile bullet = Instantiate(projectilePRefab, firePoint.position, Quaternion.identity);
         bullet.Instantiate(this);

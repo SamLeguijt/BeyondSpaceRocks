@@ -80,12 +80,12 @@ public class GameManager : MonoBehaviour
         if (MainCamera == null)
             MainCamera = Camera.main;
 
-        AudioManager.Instance.PlayGameMusic();
+        AudioManager.Instance?.PlayGameMusic();
     }
 
     private void OnPlayerDeathEvent()
     {
-        AudioManager.Instance.PlayGameOverClip();
+        AudioManager.Instance?.PlayGameOverClip();
         SimulationSpeed = 0f;
         IsGameActive = false;
         GameEndedEvent?.Invoke();

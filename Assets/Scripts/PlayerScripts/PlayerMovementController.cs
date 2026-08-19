@@ -145,7 +145,7 @@ public class PlayerMovementController : MonoBehaviour
 
         StartLaneSwapEvent?.Invoke(targetLane);
         isSwappingLanes = true;
-        AudioManager.Instance.PlayMovementSFX();
+        AudioManager.Instance?.PlayMovementSFX();
 
         while (elapsedTime < maxTime)
         {

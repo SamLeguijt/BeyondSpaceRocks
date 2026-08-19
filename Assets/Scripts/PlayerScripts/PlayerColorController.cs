@@ -79,7 +79,7 @@ public class PlayerColorController : MonoBehaviour
         }
 
 
-        AudioManager.Instance.PlayColorSwitchSFX();
+        AudioManager.Instance?.PlayColorSwitchSFX();
 
         CurrentColor = AllColors[newColorIndex];
         PlayerSprite.color = CurrentColor.Color;

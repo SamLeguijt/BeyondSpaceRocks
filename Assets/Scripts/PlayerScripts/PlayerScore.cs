@@ -32,6 +32,6 @@ public class PlayerScore : MonoBehaviour
         CurrentScore += obstacle.ColorData.Score;
 
         scoreTMP.text = CurrentScore.ToString();
-        AudioManager.Instance.PlayScoreIncreaseSFX();
+        AudioManager.Instance?.PlayScoreIncreaseSFX();
     }
 }
