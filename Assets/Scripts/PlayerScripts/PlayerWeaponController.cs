@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerWeapon : MonoBehaviour
+public class PlayerWeaponController : MonoBehaviour
 {
     public float ProjectileSpeed => projectileSpeed;
 
@@ -18,6 +18,8 @@ public class PlayerWeapon : MonoBehaviour
     [SerializeField] private Timer cooldownTimer = null;
     [SerializeField] private string animatorShootClipName = "Shoot";
 
+    public AbstractWeapon CurrentWeapon { get; private set; } =  null;
+
     [Header("Settings")]
     [SerializeField] private float projectileSpeed = 1f;
     [field: SerializeField] public float ShootCooldownTime { get; private set;  } = 0f;
@@ -25,6 +27,8 @@ public class PlayerWeapon : MonoBehaviour
 
     private void Start()
     {
+        //if (CurrentWeapon == null)
+
         inputController.ShootInput += OnShootInputReceivedEvent;
         playerColor.OnColorChanged += OnColorChangedEvent;
         GameManager.Instance.GameStartedEvent += OnGameStartEvent;
@@ -36,11 +40,6 @@ public class PlayerWeapon : MonoBehaviour
         inputController.ShootInput -= OnShootInputReceivedEvent;
         GameManager.Instance.GameStartedEvent -= OnGameStartEvent;
         GameManager.Instance.GameEndedEvent -= OnGameEndEvent;
-    }
-
-    private void Update()
-    {
-        
     }
 
     private void OnShootInputReceivedEvent()
@@ -56,12 +55,17 @@ public class PlayerWeapon : MonoBehaviour
         if (!CanShoot())
             return;
 
-        AudioManager.Instance?.PlayShootSFX();
+        //AudioManager.Instance?.PlayShootSFX();
         weaponAnimator.Play(animatorShootClipName);
+        //InstantiatieBullet();
+        //cooldownTimer.StartTimer(ShootCooldownTime);
+    }
+/*
+    private void InstantiatieBullet()
+    {
         Projectile bullet = Instantiate(projectilePRefab, firePoint.position, Quaternion.identity);
         bullet.Instantiate(this);
-        cooldownTimer.StartTimer(ShootCooldownTime);
-    }
+    }*/
 
     private bool CanShoot()
     {
