@@ -15,10 +15,13 @@ public class PlayerWeapon : MonoBehaviour
     [SerializeField] private PlayerInput inputController = null;
     [SerializeField] private PlayerColorController playerColor = null;
     [SerializeField] private Animator weaponAnimator = null;
+    [SerializeField] private Timer cooldownTimer = null;
     [SerializeField] private string animatorShootClipName = "Shoot";
 
     [Header("Settings")]
     [SerializeField] private float projectileSpeed = 1f;
+    [field: SerializeField] public float ShootCooldownTime { get; private set;  } = 0f;
+
 
     private void Start()
     {
@@ -35,6 +38,11 @@ public class PlayerWeapon : MonoBehaviour
         GameManager.Instance.GameEndedEvent -= OnGameEndEvent;
     }
 
+    private void Update()
+    {
+        
+    }
+
     private void OnShootInputReceivedEvent()
     {
         if (!inputController.IsInputActive)
@@ -45,13 +53,21 @@ public class PlayerWeapon : MonoBehaviour
 
     private void ShootBullet()
     {
-        if (!AllowedToShoot)
+        if (!CanShoot())
             return;
 
         AudioManager.Instance?.PlayShootSFX();
         weaponAnimator.Play(animatorShootClipName);
         Projectile bullet = Instantiate(projectilePRefab, firePoint.position, Quaternion.identity);
         bullet.Instantiate(this);
+        cooldownTimer.StartTimer(ShootCooldownTime);
+    }
+
+    private bool CanShoot()
+    {
+        bool value = AllowedToShoot && !cooldownTimer.IsRunning;
+
+        return value;
     }
 
     private void OnColorChangedEvent(ColorData colorData)
