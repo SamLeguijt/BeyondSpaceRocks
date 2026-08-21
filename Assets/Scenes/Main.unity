@@ -5181,9 +5181,10 @@ GameObject:
   - component: {fileID: 1965527306}
   - component: {fileID: 1965527305}
   - component: {fileID: 1965527304}
-  - component: {fileID: 1965527307}
   - component: {fileID: 1965527308}
   - component: {fileID: 1965527310}
+  - component: {fileID: 1965527312}
+  - component: {fileID: 1965527311}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -5313,25 +5314,6 @@ MonoBehaviour:
   laneManager: {fileID: 1603864585}
   moveParticles: {fileID: 1933874577}
   laneSwapSpeed: 23
---- !u!114 &1965527307
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965527300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5657ae466d4ea8648812d22830f82ea7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  firePoint: {fileID: 714541668}
-  projectilePRefab: {fileID: 7937338659242989628, guid: 2267dcdef5954a54c86fd61508e4cad4, type: 3}
-  inputController: {fileID: 1965527304}
-  playerColor: {fileID: 1965527308}
-  weaponAnimator: {fileID: 714541669}
-  animatorShootClipName: Shoot
-  projectileSpeed: 15
 --- !u!114 &1965527308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5363,6 +5345,37 @@ MonoBehaviour:
   baseSprite: {fileID: -817926505907784346, guid: 3e57fd5bb744e1f4998cf448f6e25e60, type: 3}
   slightDamagedSprite: {fileID: -3269202598301612544, guid: e89bf4cc7ff998540b9c1bc004733ab7, type: 3}
   heavyDamagedSprite: {fileID: 4149434600455196728, guid: 6a9e47c7575547347940cf14d433b6d1, type: 3}
+--- !u!114 &1965527311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965527300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e152b5f830975f44f8a720559ed70dd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1965527312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965527300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f0806b77ce35294084d6f038b77e670, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultWeaponData: {fileID: 11400000, guid: 4b255d4ffa66f4ddba92121861e068d9, type: 2}
+  firePoint: {fileID: 714541668}
+  inputController: {fileID: 1965527304}
+  playerColor: {fileID: 1965527308}
+  weaponAnimator: {fileID: 714541669}
+  cooldownTimer: {fileID: 1965527311}
+  animatorShootClipName: Shoot
 --- !u!1 &2015465388
 GameObject:
   m_ObjectHideFlags: 0

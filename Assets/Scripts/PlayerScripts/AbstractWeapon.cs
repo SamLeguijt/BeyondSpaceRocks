@@ -5,25 +5,21 @@ using UnityEngine;
 
 public abstract class AbstractWeapon 
 {
-    protected Projectile Projectile { get; set; }
+    public WeaponData WeaponData { get; protected set; } = null;
 
-    public float ProjectileSpeed { get; protected set; }
-
-    public Timer CooldownTimer {  get; protected set; }
+    protected int CurrentAmmo { get; set; } = 0;
     
-    public float CooldownSeconds { get; protected set; }
+    public Action OnFire {  get; protected set; } = null;
 
-    public int MaxAmmo { get; protected set; }
-
-    protected int CurrentAmmo { get; set; }
-    
-    public Action OnFire { get; protected set; }
+    public AbstractWeapon(WeaponData weaponData) { }
 
     public abstract bool CanFire(); 
+
+    public abstract bool HasAmmo();
     
     public abstract void Fire(Vector2 position, ColorData currentColor);
 
-    protected abstract void InstantiateBullet(ColorData currentColor = default); 
+    protected abstract void InstantiateBullet(Vector2 position, ColorData currentColor = default); 
 
-    public abstract void Reload(); 
+    public abstract void RefillAmmo(); 
 }

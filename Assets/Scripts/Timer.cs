@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Timer : MonoBehaviour 
@@ -11,7 +12,9 @@ public class Timer : MonoBehaviour
 
     private float currentTime; 
 
-    public void StartTimer(float durationSeconds)
+    private Action onCompletionCallback = null; 
+
+    public void StartTimer(float durationSeconds, Action callback = null)
     {
         Reset();
         
@@ -19,6 +22,7 @@ public class Timer : MonoBehaviour
         Remaining = Duration; 
         IsFinished = false;
         IsRunning = true; 
+        onCompletionCallback = callback; 
     }
 
     public void Reset()
@@ -27,6 +31,7 @@ public class Timer : MonoBehaviour
         IsFinished = false;
         Duration = 0;
         Remaining = 0; 
+        onCompletionCallback = null;
     }
 
     private void Update()
@@ -50,6 +55,7 @@ public class Timer : MonoBehaviour
     public void Complete()
     {
         IsRunning = false; 
-        IsFinished = true;
+        IsFinished = true;       
+        onCompletionCallback?.Invoke(); 
     }
 }

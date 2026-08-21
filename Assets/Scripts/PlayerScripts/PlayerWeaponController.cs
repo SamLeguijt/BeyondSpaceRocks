@@ -1,17 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class PlayerWeaponController : MonoBehaviour
 {
-    public float ProjectileSpeed => projectileSpeed;
-
     public ColorData CurrentColor {  get; private set; }
     public bool AllowedToShoot { get; private set; } = false;
 
     [Header("References")]
+    [SerializeField] private WeaponData defaultWeaponData = null;
     [SerializeField] private Transform firePoint = null;
-    [SerializeField] private Projectile projectilePRefab = null;
     [SerializeField] private PlayerInput inputController = null;
     [SerializeField] private PlayerColorController playerColor = null;
     [SerializeField] private Animator weaponAnimator = null;
@@ -20,14 +19,10 @@ public class PlayerWeaponController : MonoBehaviour
 
     public AbstractWeapon CurrentWeapon { get; private set; } =  null;
 
-    [Header("Settings")]
-    [SerializeField] private float projectileSpeed = 1f;
-    [field: SerializeField] public float ShootCooldownTime { get; private set;  } = 0f;
-
-
     private void Start()
     {
-        //if (CurrentWeapon == null)
+        if (CurrentWeapon == null)
+            EquipDefaultWeapon();
 
         inputController.ShootInput += OnShootInputReceivedEvent;
         playerColor.OnColorChanged += OnColorChangedEvent;
@@ -50,26 +45,43 @@ public class PlayerWeaponController : MonoBehaviour
         ShootBullet();
     }
 
+    private void EquipDefaultWeapon()
+    {
+        CurrentWeapon = new DefaultWeapon(defaultWeaponData);
+    }
+
     private void ShootBullet()
     {
         if (!CanShoot())
             return;
 
-        //AudioManager.Instance?.PlayShootSFX();
-        weaponAnimator.Play(animatorShootClipName);
-        //InstantiatieBullet();
-        //cooldownTimer.StartTimer(ShootCooldownTime);
+        if (!CurrentWeapon.HasAmmo())
+        {
+            ReloadWeapon();
+            return; // Needs visual feedback for players. 
+        }
+        else
+        {
+            weaponAnimator.Play(animatorShootClipName);
+            CurrentWeapon?.Fire(firePoint.position, CurrentColor);
+            cooldownTimer.StartTimer(CurrentWeapon.WeaponData.CooldownSeconds);
+        }
     }
-/*
-    private void InstantiatieBullet()
+
+    private void ReloadWeapon()
     {
-        Projectile bullet = Instantiate(projectilePRefab, firePoint.position, Quaternion.identity);
-        bullet.Instantiate(this);
-    }*/
+        if (cooldownTimer.IsRunning)
+            cooldownTimer.Complete();
+
+        cooldownTimer.StartTimer(CurrentWeapon.WeaponData.ReloadSeconds, () => 
+        {
+            CurrentWeapon.RefillAmmo();
+        });
+    }
 
     private bool CanShoot()
     {
-        bool value = AllowedToShoot && !cooldownTimer.IsRunning;
+        bool value = CurrentWeapon != null && AllowedToShoot && !cooldownTimer.IsRunning;
 
         return value;
     }

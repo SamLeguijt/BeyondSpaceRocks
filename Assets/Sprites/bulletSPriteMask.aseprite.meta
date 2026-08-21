@@ -8,6 +8,7 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
+  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -204,13 +205,18 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -784400929
+    uuid:
+      value0: 1977820187
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: 1977820187
     name: bulletSPriteMask
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: bulletSPriteMask_Frame_0
+    - name: Frame_0
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -219,7 +225,7 @@ ScriptedImporter:
         width: 4
         height: 7
       spriteId: 50d4b36d168a47d459dba0aea9618cb3
-    - name: bulletSPriteMask_Frame_1
+    - name: Frame_1
       frameIndex: 1
       additiveSortOrder: 0
       cellRect:
@@ -228,7 +234,7 @@ ScriptedImporter:
         width: 4
         height: 7
       spriteId: c6d33f632f850644cb809e7d0cbb5369
-    - name: bulletSPriteMask_Frame_2
+    - name: Frame_2
       frameIndex: 2
       additiveSortOrder: 0
       cellRect:
@@ -237,7 +243,7 @@ ScriptedImporter:
         width: 4
         height: 7
       spriteId: a19cf49b548e68d4a9f216caea7ee2aa
-    - name: bulletSPriteMask_Frame_3
+    - name: Frame_3
       frameIndex: 3
       additiveSortOrder: 0
       cellRect:
@@ -253,3 +259,4 @@ ScriptedImporter:
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 32, y: 32}
+  previousTextureSize: {x: 32, y: 32}

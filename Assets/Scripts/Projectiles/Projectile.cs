@@ -14,13 +14,13 @@ public class Projectile : MonoBehaviour
     private bool isEnabled = false;
     private Vector2 screenBounds;
 
-    public void Instantiate(AbstractWeapon owner, ColorData currentColor)
+    public void Instantiate(float speed, ColorData color)
     {
         screenBounds = GameManager.Instance.GetScreenBounds();
 
-        this.speed = owner.ProjectileSpeed;
+        this.speed = speed;
     
-        CurrentColor = currentColor;
+        CurrentColor = color;
         spriteRenderer.color = CurrentColor.Color;
 
         isEnabled = true;
