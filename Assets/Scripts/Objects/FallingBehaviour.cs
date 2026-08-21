@@ -11,7 +11,7 @@ public class FallingBehaviour : MonoBehaviour
     
     [field: SerializeField] public float FallSpeed { get; private set; } = 1f;
     
-    public bool IsActive { get; private set; } = true;
+    public bool IsActive { get; private set; } = false;
 
     public void ToggleActive()
     {
@@ -23,7 +23,7 @@ public class FallingBehaviour : MonoBehaviour
         IsActive = value;
     }
 
-    public void Fall()
+    public virtual void Fall()
     {
         transform.position = new Vector2(transform.position.x, transform.position.y - FallSpeed * GameManager.Instance.SimulationSpeed * Time.deltaTime);
     }
