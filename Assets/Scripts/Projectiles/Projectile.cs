@@ -40,7 +40,7 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void OnObstacleCollision(Obstacle obstacle)
+    public void OnObjectCollision(Obstacle obstacle)
     {
         HasCollided = true;
         Destroy(gameObject);

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Weapon_Default
   m_EditorClassIdentifier: 
   <ProjectilePrefab>k__BackingField: {fileID: 7937338659242989628, guid: 2267dcdef5954a54c86fd61508e4cad4, type: 3}
-  <ProjectileSpeed>k__BackingField: 5
+  <ProjectileSpeed>k__BackingField: 15
   <MaxAmmo>k__BackingField: 10
   <CooldownSeconds>k__BackingField: 0.15
-  <ReloadSeconds>k__BackingField: 3
+  <ReloadSeconds>k__BackingField: 1
