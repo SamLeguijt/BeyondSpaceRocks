@@ -55,17 +55,16 @@ public class Obstacle : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteSizeHalfedY = spriteRenderer.sprite.bounds.size.y / 2;
 
-        if (obstacleSprites != null && obstacleSprites.Length > 0)
-        {
-            int randomIndex = Random.Range(0, obstacleSprites.Length);
-            spriteRenderer.sprite = obstacleSprites[randomIndex];
-        }
+        // if (obstacleSprites != null && obstacleSprites.Length > 0)
+        // {
+        //     int randomIndex = Random.Range(0, obstacleSprites.Length);
+        //     spriteRenderer.sprite = obstacleSprites[randomIndex];
+        // }
 
         obstacleCollider.isTrigger = true;
 
         screenBounds = GameManager.Instance.GetScreenBounds();
         projectileLayer = GameManager.Instance.ProjectileLayerIndex;
-
     }
 
     private void Start()
@@ -87,29 +86,16 @@ public class Obstacle : MonoBehaviour
         isActive = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    protected virtual void OnProjectileCollision(Projectile projectile)
     {
         if (!canBeDestroyed)
+            return; 
+
+        if (projectile.CurrentColor.ColorType != ColorData.ColorType)
             return;
 
-        if (collision.gameObject.layer == projectileLayer)
-        {
-            if (collision.TryGetComponent(out Projectile projectile))
-            {
-                if (projectile != null)
-                {
-                    if (projectile.HasCollided)
-                        return;
-
-                    if (projectile.CurrentColor.ColorType != ColorData.ColorType)
-                        return;
-
-                    ObstacleProjectileCollisionEvent?.Invoke(this, projectile);
-                    DisableObstacleOnDeath();
-                    projectile.OnObstacleCollision(this);
-                }
-            }
-        }
+        ObstacleProjectileCollisionEvent?.Invoke(this, projectile);
+        DisableObstacleOnDeath();
     }
 
     private void DisableObstacleOnDeath()
