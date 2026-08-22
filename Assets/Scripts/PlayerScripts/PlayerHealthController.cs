@@ -9,7 +9,7 @@ public class PlayerHealthController : MonoBehaviour
     public event PlayerHealthHandler PlayerGameOverEvent;
     public event PlayerHealthHandler PlayerLoseLifeEvent;
 
-    public float MaxLives => maxLives;
+    public float MaxLives => maxLives; 
     public float CurrentLives => currentLives;
     public bool IsAlive => currentLives > 0;
 

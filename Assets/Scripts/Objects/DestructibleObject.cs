@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class DestructibleObject : MonoBehaviour, IProjectileTarget
 {
-    public int HitPoints { get; protected set; }
-    
+    [field: SerializeField] public HitPointComponent HP { get; private set; } 
+
     public virtual void OnProjectileCollision(Projectile projectile) 
     {
         
