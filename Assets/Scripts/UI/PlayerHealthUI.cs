@@ -34,7 +34,7 @@ public class PlayerHealthUI : MonoBehaviour
     {
         float space = .25f;
 
-        for (int i = 0; i < playerHealth.MaxLives; i++)
+        for (int i = 0; i < playerHealth.MaxHP; i++)
         {
             Vector2 position = new Vector2(leftPanelSide.transform.position.x + (space * i), healthPanelUI.transform.position.y);
             Image heart = Instantiate(heartSprite, position, Quaternion.identity, healthPanelUI.transform);

@@ -14,7 +14,12 @@ public class HitPointComponent : MonoBehaviour
     public delegate void HitPointChangesHandler(int amountChanged); 
     public event HitPointChangesHandler OnHitTakenEvent;
     public event HitPointChangesHandler OnHitRestoredEvent; 
-    public event HitPointChangesHandler OnDeathEvent; 
+    public event HitPointChangesHandler OnDeathEvent;
+
+    void Start()
+    {
+        ResetHP();
+    }
 
     public virtual void ResetHP()
     {
@@ -34,7 +39,7 @@ public class HitPointComponent : MonoBehaviour
         if (!CanTakeHit())
             return;
 
-        int amountTaken = Math.Max(CurrentHP, hits); 
+        int amountTaken = Math.Min(CurrentHP, hits); 
 
         CurrentHP = Math.Max(0, CurrentHP - amountTaken); 
         OnHitTakenEvent?.Invoke(amountTaken);
