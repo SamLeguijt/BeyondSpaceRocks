@@ -91,7 +91,7 @@ public class Obstacle : MonoBehaviour
         if (!canBeDestroyed)
             return; 
 
-        if (projectile.CurrentColor.ColorType != ColorData.ColorType)
+        if (projectile.ColorData.ColorType != ColorData.ColorType)
             return;
 
         ObstacleProjectileCollisionEvent?.Invoke(this, projectile);

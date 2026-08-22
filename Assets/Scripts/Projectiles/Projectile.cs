@@ -5,7 +5,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     public bool HasCollided {  get; protected set; }
-    public ColorData CurrentColor { get; protected set; }
+    public ColorData ColorData { get; protected set; }
 
     [Header("References")]
     [SerializeField] protected SpriteRenderer spriteRenderer = null;
@@ -22,8 +22,8 @@ public class Projectile : MonoBehaviour
         projectileCollisionLayer = GameManager.Instance.ProjectileLayerIndex; 
         
         this.speed = speed;
-        CurrentColor = color;
-        spriteRenderer.color = CurrentColor.Color;
+        ColorData = color;
+        spriteRenderer.color = ColorData.Color;
 
         isEnabled = true;
     }
