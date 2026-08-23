@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 public class FallingBehaviour : MonoBehaviour
 {
@@ -10,7 +12,6 @@ public class FallingBehaviour : MonoBehaviour
 // Rock is a destructible object, using IColorSomething interface 
     
     [field: SerializeField] public float FallSpeed { get; private set; } = 1f;
-    
     public bool IsActive { get; private set; } = false;
 
     public void ToggleActive()
@@ -23,14 +24,21 @@ public class FallingBehaviour : MonoBehaviour
         IsActive = value;
     }
 
+    public void SetFallSpeed(float value)
+    {
+        FallSpeed = value;
+    }
+
     public virtual void Fall()
     {
         transform.position = new Vector2(transform.position.x, transform.position.y - FallSpeed * GameManager.Instance.SimulationSpeed * Time.deltaTime);
     }
 
-    protected virtual void FixedUpdate()
+    void Update()
     {
-        if (IsActive)
-            Fall();
-    } 
+        if (!IsActive)
+           return; 
+        
+        Fall();
+    }
 }

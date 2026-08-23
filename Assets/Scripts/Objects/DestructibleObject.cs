@@ -1,46 +1,53 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
 {
     [field: SerializeField] public HitPointComponent HP { get; private set; } 
-    [field: SerializeField] public AbstractColorHandler ColorInteractionHandler { get; protected set; }
+    [field: SerializeField] public BoxCollider2D Collider { get; protected set; }
     public delegate void DestructionEventHandler(DestructibleObject destroyed, Projectile by); 
-    public event DestructionEventHandler OnDestroyEvent; 
+    public event DestructionEventHandler OnDestroyEvent;
+
+    void Awake()
+    {
+        // Collider = GetComponent<Collider2D>();
+        Collider.isTrigger = true; 
+    }
 
     public void OnProjectileCollision(Projectile projectile) 
     {
-        if (!CanHandleProjectileCollision(projectile))
+        if (!CanCollideWith(projectile))
             return;
 
-        HandleCollision(projectile);
+        ReceiveHit(projectile);
     }
-
-    protected virtual bool CanHandleProjectileCollision(Projectile projectile)
+    
+    public virtual bool CanCollideWith(Projectile projectile)
     {
-        return HP.CanTakeHit() && 
-                ColorInteractionHandler.ResolveColorInteraction(projectile.ColorData);
+        return HP.CanTakeHit(); 
     }
 
-    protected virtual void HandleCollision(Projectile projectile)
+    protected virtual void ReceiveHit(Projectile projectile)
     {
         HP.TakeHitPoints(1);
-
+        
         if (!HP.IsAlive)
         {
-            OnDestruct(projectile);
+            Destruct(projectile);
         }
     }
 
-    protected virtual void OnDestruct(Projectile destroyedBy)
+    protected virtual void Destruct(Projectile destroyedBy)
     {
+        Collider.enabled = false; 
         OnDestroyEvent?.Invoke(this, destroyedBy);
-        HandleDestruction();
+        OnDestruct();
         DisableObjectInternally();
     }
 
-    protected abstract void HandleDestruction();
+    protected abstract void OnDestruct();
 
     protected void DisableObjectInternally()
     {

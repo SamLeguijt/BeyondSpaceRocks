@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Obstacle : MonoBehaviour
+public class Obstacle : DestructibleObject
 {
     public delegate void ObstcaleCollisionHandler(Obstacle obstacle, Projectile projectile);
     public delegate void ObstacleEscapedHandler(Obstacle obstacle);
@@ -12,8 +13,10 @@ public class Obstacle : MonoBehaviour
 
     public static float BottomBorder = 2.2f;
 
-    public ColorData ColorData { get; private set; }
+    public ColorData ColorData { get; protected set; }
     [SerializeField] private Sprite[] obstacleSprites = null;
+
+    [field: SerializeField] public FallingBehaviour FallBehaviour { get; private set; }
 
     [Header("Effect References")]
     [SerializeField] private Animator hitEffectAnimator = null;
@@ -22,17 +25,12 @@ public class Obstacle : MonoBehaviour
     [SerializeField] private List<AnimationClip> hitAnimations = null;
     [SerializeField] private List<AnimationClip> hitAnimationMasks = null;
 
-    private Collider2D obstacleCollider = null;
-    private bool canBeDestroyed = false;
-    private bool isActive = false;
-    private float fallSpeed = 1f;
-    private int projectileLayer;
-    private Vector2 screenBounds;
-
     private SpriteRenderer spriteRenderer;
     private float spriteSizeHalfedY;
-
     private int randomHitEffectAnimation = 0;
+
+    private Bounds playFieldBounds = default;
+    private bool wasInsidePlayfield = false;
 
     private void OnEnable()
     {
@@ -46,25 +44,20 @@ public class Obstacle : MonoBehaviour
 
     private void OnGameEndedEvent()
     {
-        isActive = false;
+        FallBehaviour.SetActive(false);
     }
 
     private void Awake()
     {
-        obstacleCollider = GetComponent<Collider2D>();
+        Debug.Log(" hi");
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteSizeHalfedY = spriteRenderer.sprite.bounds.size.y / 2;
 
-        // if (obstacleSprites != null && obstacleSprites.Length > 0)
-        // {
-        //     int randomIndex = Random.Range(0, obstacleSprites.Length);
-        //     spriteRenderer.sprite = obstacleSprites[randomIndex];
-        // }
-
-        obstacleCollider.isTrigger = true;
-
-        screenBounds = GameManager.Instance.GetScreenBounds();
-        projectileLayer = GameManager.Instance.ProjectileLayerIndex;
+        if (obstacleSprites != null && obstacleSprites.Length > 0)
+        {
+            int randomIndex = Random.Range(0, obstacleSprites.Length);
+            spriteRenderer.sprite = obstacleSprites[randomIndex];
+        }
     }
 
     private void Start()
@@ -78,59 +71,77 @@ public class Obstacle : MonoBehaviour
     public void Initialize(ColorData colorData)
     {
         this.ColorData = colorData;
-        this.fallSpeed = Random.Range(ColorData.MinSpeed, ColorData.MaxSpeed);
+
+        FallBehaviour.SetFallSpeed(Random.Range(ColorData.MinSpeed, ColorData.MaxSpeed));
 
         spriteRenderer.color = this.ColorData.Color;
         maskHitRenderer.color = this.ColorData.Color;
 
-        isActive = true;
+        FallBehaviour.SetActive(true);
     }
 
-    protected virtual void OnProjectileCollision(Projectile projectile)
+    public override bool CanCollideWith(Projectile projectile)
     {
-        if (!canBeDestroyed)
-            return; 
-
-        if (projectile.ColorData.ColorType != ColorData.ColorType)
-            return;
-
-        ObstacleProjectileCollisionEvent?.Invoke(this, projectile);
-        DisableObstacleOnDeath();
+        return base.CanCollideWith(projectile) && ColorData.ColorType == projectile.ColorData.ColorType;
     }
 
-    private void DisableObstacleOnDeath()
+    protected override void OnDestruct()
     {
         hitEffectAnimator.Play(hitAnimations[randomHitEffectAnimation].name);
         hitMaskAnimator.Play(hitAnimationMasks[randomHitEffectAnimation].name);
 
-        isActive = false;
-
-        obstacleCollider.enabled = false;
-        canBeDestroyed = true;
-
+        FallBehaviour.SetActive(false);
         spriteRenderer.sprite = null;
-        Destroy(gameObject, 1f);
     }
 
-    private void Update()
+    protected virtual void EnterPlay()
     {
-        if (!isActive)
-            return;
+        // Enable collision/hit taken 
+    }
 
-        if (!canBeDestroyed)
-        {
-            if (transform.position.y < 2.9f)//(screenBounds.y - spriteSizeHalfedY * 2 ))
-                canBeDestroyed = true;
-        }
+    protected virtual void EscapePlay()
+    {
+        AudioManager.Instance?.PlayObjectEscapedSFX();
+        ObstacleEscapedEvent?.Invoke(this);
+        FallBehaviour.SetActive(false);
+        Destroy(gameObject); // <- Pool
+    }
 
-        transform.position = new Vector2(transform.position.x, transform.position.y - fallSpeed * GameManager.Instance.SimulationSpeed * Time.deltaTime);
+    void Update()
+    {
+        if (FallBehaviour.IsActive)
+            CheckPlayfieldChanges();
+    }
 
-        if (transform.position.y < (-BottomBorder - spriteSizeHalfedY))
-        {
-            AudioManager.Instance?.PlayObjectEscapedSFX();
-            ObstacleEscapedEvent?.Invoke(this);
-            isActive = false;
-            Destroy(gameObject);
-        }
+    private void CheckPlayfieldChanges()
+    {
+        bool isInPlayfield = IsInsidePlayField();
+
+        if (isInPlayfield && !wasInsidePlayfield)
+            EnterPlay();
+
+        if (!isInPlayfield && wasInsidePlayfield)
+            EscapePlay();
+
+        wasInsidePlayfield = isInPlayfield;
+    }
+
+    private bool IsInsidePlayField()
+    {
+        if (playFieldBounds == default) 
+            playFieldBounds = GameManager.Instance.PlayFieldBounds;
+        
+        float x = transform.position.x;
+        float y = transform.position.y;
+
+        Vector2 spriteSizeOffset = spriteRenderer.sprite.bounds.size / 2;
+
+        float fieldMinX = playFieldBounds.min.x + spriteSizeOffset.x;
+        float fieldMaxX = playFieldBounds.max.x - spriteSizeOffset.x; 
+        float fieldMinY = playFieldBounds.min.y - spriteSizeOffset.y;
+        float fieldMaxY = playFieldBounds.max.y + spriteSizeOffset.y; 
+
+        return x > fieldMinX && x < fieldMaxX &&
+                y > fieldMinY && y < fieldMaxY;  
     }
 }

@@ -14,12 +14,12 @@ public class Projectile : MonoBehaviour
     protected bool isEnabled = false;
     protected Vector2 screenBounds;
 
-    protected int projectileCollisionLayer { get; private set; } 
+    protected int projectileTargetCollisionLayer { get; private set; } 
 
     public virtual void Instantiate(float speed, ColorData color)
     {
         screenBounds = GameManager.Instance.GetScreenBounds();
-        projectileCollisionLayer = GameManager.Instance.ProjectileLayerIndex; 
+        projectileTargetCollisionLayer = GameManager.Instance.ProjectileTargetCollisionLayer; 
         
         this.speed = speed;
         ColorData = color;
@@ -46,15 +46,18 @@ public class Projectile : MonoBehaviour
         if (!isEnabled)
             return;
 
-        if (collision.gameObject.layer != projectileCollisionLayer)
+        if (collision.gameObject.layer != projectileTargetCollisionLayer)
             return; 
 
         IProjectileTarget target = collision.GetComponent<IProjectileTarget>();
 
-        if (target != null)
+        if (target == null)
+            return;
+
+        if (target.CanCollideWith(this))
         {
-            OnCollision();
             target.OnProjectileCollision(this);
+            OnCollision();
         }
     }
 

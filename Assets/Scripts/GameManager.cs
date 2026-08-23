@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
 
     [field: Header("Settings")]
-    [field: SerializeField] public int ProjectileLayerIndex { get; private set; } = 6;
+    [field: SerializeField] public int ProjectileTargetCollisionLayer { get; private set; } = 7;
     [field: SerializeField] public float LoadGameOverSceneDelay { get; private set; } = 3f;
     [field: SerializeField] public float DecreasedSimulationSpeed { get; private set; } = .75f;
     [field: SerializeField] public float DecreasedSpeedDuration { get; private set; } = 2.5f;
@@ -33,8 +33,8 @@ public class GameManager : MonoBehaviour
 
     [field: SerializeField] public float ScreenFlashAlphaIntensity { get; private set; } = 200f;
     [field: SerializeField] public float ScreenFlashFadeInDuration { get; private set; } = .1f;
+    [field: SerializeField] public Bounds PlayFieldBounds {get; private set; }
     [SerializeField] public float SimulationSpeed { get; private set; } = 0f;
-
 
     public bool IsGameActive { get; private set; } = false;
 
@@ -145,6 +145,9 @@ public class GameManager : MonoBehaviour
         decreasedSpeedRoutine = null;
     }
 
+    // public Bounds GetPlayFieldBounds()
+    // {
+    // }
     public Vector2 GetScreenBounds()
     {
         Vector2 screenBottomLeft = MainCamera.ViewportToWorldPoint(new Vector2(0, 0));

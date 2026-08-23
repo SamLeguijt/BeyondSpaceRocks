@@ -119,7 +119,9 @@ GameObject:
   - component: {fileID: 2735970313958628660}
   - component: {fileID: 120686136281852743}
   - component: {fileID: -6832448577779533975}
-  m_Layer: 0
+  - component: {fileID: 8060822782027023860}
+  - component: {fileID: 7275887915510436292}
+  m_Layer: 7
   m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,6 +208,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b49e2399090201e419669808fb3c2dc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <HP>k__BackingField: {fileID: 8060822782027023860}
+  <Collider>k__BackingField: {fileID: 120686136281852743}
   obstacleSprites:
   - {fileID: 71662314, guid: 1c3060b05d8bd5449bd9344aed4c26ab, type: 3}
   - {fileID: 1431153822, guid: 1c3060b05d8bd5449bd9344aed4c26ab, type: 3}
@@ -215,6 +219,7 @@ MonoBehaviour:
   - {fileID: 799668843, guid: 1c3060b05d8bd5449bd9344aed4c26ab, type: 3}
   - {fileID: -974114190, guid: 1c3060b05d8bd5449bd9344aed4c26ab, type: 3}
   - {fileID: -2111953396, guid: 1c3060b05d8bd5449bd9344aed4c26ab, type: 3}
+  <FallBehaviour>k__BackingField: {fileID: 7275887915510436292}
   hitEffectAnimator: {fileID: 8476550098431338883}
   hitMaskAnimator: {fileID: 3728782186366874180}
   maskHitRenderer: {fileID: 2204266208823910327}
@@ -298,6 +303,33 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &8060822782027023860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488039449537637625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c6114a21887442a95d6fe65e0c50e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <MaxHP>k__BackingField: 1
+  <CurrentHP>k__BackingField: 0
+--- !u!114 &7275887915510436292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488039449537637625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5758c9bcdd2254dfea494edacbc7da3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <FallSpeed>k__BackingField: 1
 --- !u!1 &7802117457732428307
 GameObject:
   m_ObjectHideFlags: 0
