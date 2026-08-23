@@ -14,12 +14,9 @@ public class Projectile : MonoBehaviour
     protected bool isEnabled = false;
     protected float playFieldBoundsY;
 
-    protected int projectileTargetCollisionLayer { get; private set; } 
-
     public virtual void Instantiate(float speed, ColorData color)
     {
         playFieldBoundsY = GameManager.Instance.PlayFieldBounds.max.y;
-        projectileTargetCollisionLayer = GameManager.Instance.ProjectileTargetCollisionLayer; 
         
         this.speed = speed;
         ColorData = color;
@@ -46,17 +43,14 @@ public class Projectile : MonoBehaviour
         if (!isEnabled)
             return;
 
-        if (collision.gameObject.layer != projectileTargetCollisionLayer)
-            return; 
-
         IProjectileTarget target = collision.GetComponent<IProjectileTarget>();
 
         if (target == null)
             return;
 
-        if (target.CanReceiveHit(this))
+        if (target.CanInteractWith(this))
         {
-            target.OnProjectileCollision(this);
+            target.InteractWith(this);
             OnCollision();
         }
     }

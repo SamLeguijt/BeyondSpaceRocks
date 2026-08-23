@@ -14,23 +14,20 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
     {
         Collider.isTrigger = true; 
     }
-
-    public void OnProjectileCollision(Projectile projectile) 
-    {
-        if (!CanReceiveHit(projectile))
-            return;
-
-        ReceiveHit(projectile);
-    }
-    
+ 
     protected void SetColliderEnabled(bool value)
     {
         Collider.enabled = value;
     }
 
-    public virtual bool CanReceiveHit(Projectile projectile)
+    public virtual bool CanInteractWith(Projectile projectile)
     {
         return Collider.enabled && HP.CanTakeHit(); 
+    }
+
+    public void InteractWith(Projectile projectile) 
+    {
+        ReceiveHit(projectile);
     }
 
     protected virtual void ReceiveHit(Projectile projectile)

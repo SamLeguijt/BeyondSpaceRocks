@@ -64,18 +64,17 @@ public class Obstacle : DestructibleObject, IScoreSource
     {
         this.ColorData = colorData;
 
-        FallBehaviour.SetFallSpeed(Random.Range(ColorData.MinSpeed, ColorData.MaxSpeed));
-
         spriteRenderer.color = this.ColorData.Color;
         maskHitRenderer.color = this.ColorData.Color;
 
-        Collider.enabled = false;
+        SetColliderEnabled(false);
+        FallBehaviour.SetFallSpeed(Random.Range(ColorData.MinSpeed, ColorData.MaxSpeed));
         FallBehaviour.SetActive(true);
     }
 
-    public override bool CanReceiveHit(Projectile projectile)
+    public override bool CanInteractWith(Projectile projectile)
     {
-        return base.CanReceiveHit(projectile) 
+        return base.CanInteractWith(projectile) 
                 && ColorData.ColorType == projectile.ColorData.ColorType;
     }
 
