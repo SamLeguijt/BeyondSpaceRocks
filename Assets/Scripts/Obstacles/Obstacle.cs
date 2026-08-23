@@ -1,16 +1,14 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random; 
 
-public class Obstacle : DestructibleObject
+public class Obstacle : DestructibleObject, IScoreSource
 {
-    public delegate void ObstcaleCollisionHandler(Obstacle obstacle, Projectile projectile);
-    public delegate void ObstacleEscapedHandler(Obstacle obstacle);
-    public static event ObstcaleCollisionHandler ObstacleProjectileCollisionEvent;
-    public static event ObstacleEscapedHandler ObstacleEscapedEvent;
-
+    public static Action<Obstacle> ObstacleEscapedEvent; 
     public ColorData ColorData { get; protected set; }
+    public float ScoreValue => ColorData.Score;
+
     [SerializeField] private Sprite[] obstacleSprites = null;
 
     [field: SerializeField] public FallingBehaviour FallBehaviour { get; private set; }
@@ -43,6 +41,11 @@ public class Obstacle : DestructibleObject
 
     private void Awake()
     {
+        SetupVisuals();
+    }
+    
+    private void SetupVisuals()
+    {
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (obstacleSprites != null && obstacleSprites.Length > 0)
@@ -51,12 +54,7 @@ public class Obstacle : DestructibleObject
             spriteRenderer.sprite = obstacleSprites[randomIndex];
         }
 
-        Collider.enabled = false;
-    }
-
-    private void Start()
-    {
-        randomHitEffectAnimation = Random.Range(0, hitAnimations.Count);
+       randomHitEffectAnimation = Random.Range(0, hitAnimations.Count);
 
         float zRot = Random.Range(0f, 360f);
         hitEffectAnimator.gameObject.transform.rotation = Quaternion.Euler(0, 0, zRot);
@@ -71,15 +69,17 @@ public class Obstacle : DestructibleObject
         spriteRenderer.color = this.ColorData.Color;
         maskHitRenderer.color = this.ColorData.Color;
 
+        Collider.enabled = false;
         FallBehaviour.SetActive(true);
     }
 
     public override bool CanReceiveHit(Projectile projectile)
     {
-        return base.CanReceiveHit(projectile) && ColorData.ColorType == projectile.ColorData.ColorType;
+        return base.CanReceiveHit(projectile) 
+                && ColorData.ColorType == projectile.ColorData.ColorType;
     }
 
-    protected override void OnDestruct()
+    protected override void HandleDestruction()
     {
         hitEffectAnimator.Play(hitAnimations[randomHitEffectAnimation].name);
         hitMaskAnimator.Play(hitAnimationMasks[randomHitEffectAnimation].name);
@@ -88,19 +88,19 @@ public class Obstacle : DestructibleObject
         spriteRenderer.sprite = null;
     }
 
-    protected virtual void EnterPlay()
+    protected virtual void EnterPlayfield()
     {
-        // Enable collision/hit taken 
-        Collider.enabled = true; 
+        SetColliderEnabled(true);
     }
 
-    protected virtual void EscapePlay()
+    protected virtual void EscapePlayfield()
     {
+        SetColliderEnabled(false);
+
         AudioManager.Instance?.PlayObjectEscapedSFX();
         ObstacleEscapedEvent?.Invoke(this);
-        FallBehaviour.SetActive(false);
-        OnDestruct();
-        Destroy(gameObject); // <- Pool
+       
+        DestructObject();
     }
 
     void Update()
@@ -114,10 +114,10 @@ public class Obstacle : DestructibleObject
         bool isInPlayfield = IsInsidePlayField();
 
         if (isInPlayfield && !wasInsidePlayfield)
-            EnterPlay();
+            EnterPlayfield();
 
         if (!isInPlayfield && wasInsidePlayfield)
-            EscapePlay();
+            EscapePlayfield();
 
         wasInsidePlayfield = isInPlayfield;
     }

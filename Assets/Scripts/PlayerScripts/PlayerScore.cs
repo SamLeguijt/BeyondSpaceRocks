@@ -19,18 +19,27 @@ public class PlayerScore : MonoBehaviour
 
     private void OnEnable()
     {
-        Obstacle.DestructObjectEvent += OnObstacleProjectileCollisionEvent;
+        DestructibleObject.ObjectDestroyEvent += OnObjectDestroyed;
     }
 
     private void OnDisable()
     {
-        Obstacle.DestructObjectEvent -= OnObstacleProjectileCollisionEvent;
+        DestructibleObject.ObjectDestroyEvent -= OnObjectDestroyed;
     }
 
-    private void OnObstacleProjectileCollisionEvent(DestructibleObject obstacle, Projectile projectile)
+    private void OnObjectDestroyed(DestructibleObject obstacle, Projectile projectile)
     {
-        // CurrentScore += obstacle.ColorData.Score;
+        IScoreSource source = obstacle as IScoreSource; 
 
+        if (source != null)
+        {
+            CurrentScore += source.ScoreValue;  
+            OnScoreChanged();
+        }
+    }
+
+    private void OnScoreChanged()
+    {
         scoreTMP.text = CurrentScore.ToString();
         AudioManager.Instance?.PlayScoreIncreaseSFX();
     }

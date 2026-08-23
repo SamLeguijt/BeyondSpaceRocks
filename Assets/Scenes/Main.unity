@@ -3595,8 +3595,8 @@ Transform:
   m_GameObject: {fileID: 1431040545}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 6.18, z: 0}
-  m_LocalScale: {x: 5, y: 0.5, z: 1}
+  m_LocalPosition: {x: 0, y: 6.335, z: 0}
+  m_LocalScale: {x: 5, y: 0.80625, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1566719595}
@@ -4536,7 +4536,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 3.3}
+  m_AnchoredPosition: {x: 0, y: 3.24}
   m_SizeDelta: {x: 480, y: 640}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1564525782
@@ -4728,7 +4728,7 @@ MonoBehaviour:
   <LaneManager>k__BackingField: {fileID: 1603864585}
   <MainCamera>k__BackingField: {fileID: 519420031}
   <ColorContainer>k__BackingField: {fileID: 11400000, guid: a50d83cddd18d774cb8576f01cdd05f0, type: 2}
-  <ProjectileLayerIndex>k__BackingField: 6
+  <ProjectileTargetCollisionLayer>k__BackingField: 7
   <LoadGameOverSceneDelay>k__BackingField: 3
   <DecreasedSimulationSpeed>k__BackingField: 0.25
   <DecreasedSpeedDuration>k__BackingField: 2.5
