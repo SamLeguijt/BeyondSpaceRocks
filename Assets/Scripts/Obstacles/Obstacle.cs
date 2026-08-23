@@ -7,11 +7,8 @@ public class Obstacle : DestructibleObject
 {
     public delegate void ObstcaleCollisionHandler(Obstacle obstacle, Projectile projectile);
     public delegate void ObstacleEscapedHandler(Obstacle obstacle);
-
     public static event ObstcaleCollisionHandler ObstacleProjectileCollisionEvent;
     public static event ObstacleEscapedHandler ObstacleEscapedEvent;
-
-    public static float BottomBorder = 2.2f;
 
     public ColorData ColorData { get; protected set; }
     [SerializeField] private Sprite[] obstacleSprites = null;
@@ -24,11 +21,8 @@ public class Obstacle : DestructibleObject
     [SerializeField] private SpriteRenderer maskHitRenderer = null;
     [SerializeField] private List<AnimationClip> hitAnimations = null;
     [SerializeField] private List<AnimationClip> hitAnimationMasks = null;
-
     private SpriteRenderer spriteRenderer;
-    private float spriteSizeHalfedY;
     private int randomHitEffectAnimation = 0;
-
     private Bounds playFieldBounds = default;
     private bool wasInsidePlayfield = false;
 
@@ -50,7 +44,6 @@ public class Obstacle : DestructibleObject
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteSizeHalfedY = spriteRenderer.sprite.bounds.size.y / 2;
 
         if (obstacleSprites != null && obstacleSprites.Length > 0)
         {
@@ -81,9 +74,9 @@ public class Obstacle : DestructibleObject
         FallBehaviour.SetActive(true);
     }
 
-    public override bool CanCollideWith(Projectile projectile)
+    public override bool CanReceiveHit(Projectile projectile)
     {
-        return base.CanCollideWith(projectile) && ColorData.ColorType == projectile.ColorData.ColorType;
+        return base.CanReceiveHit(projectile) && ColorData.ColorType == projectile.ColorData.ColorType;
     }
 
     protected override void OnDestruct()

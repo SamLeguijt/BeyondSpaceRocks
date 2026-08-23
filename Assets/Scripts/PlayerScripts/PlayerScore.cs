@@ -6,11 +6,11 @@ using UnityEngine;
 public class PlayerScore : MonoBehaviour
 {
     public float CurrentScore { get; private set; }
-
     public float TotalScore { get; private set; }
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI scoreTMP = null;
+
     private void Start()
     {
         CurrentScore = 0;
@@ -19,17 +19,17 @@ public class PlayerScore : MonoBehaviour
 
     private void OnEnable()
     {
-        Obstacle.ObstacleProjectileCollisionEvent += OnObstacleProjectileCollisionEvent;
+        Obstacle.DestructObjectEvent += OnObstacleProjectileCollisionEvent;
     }
 
     private void OnDisable()
     {
-        Obstacle.ObstacleProjectileCollisionEvent -= OnObstacleProjectileCollisionEvent;
+        Obstacle.DestructObjectEvent -= OnObstacleProjectileCollisionEvent;
     }
 
-    private void OnObstacleProjectileCollisionEvent(Obstacle obstacle, Projectile projectile)
+    private void OnObstacleProjectileCollisionEvent(DestructibleObject obstacle, Projectile projectile)
     {
-        CurrentScore += obstacle.ColorData.Score;
+        // CurrentScore += obstacle.ColorData.Score;
 
         scoreTMP.text = CurrentScore.ToString();
         AudioManager.Instance?.PlayScoreIncreaseSFX();

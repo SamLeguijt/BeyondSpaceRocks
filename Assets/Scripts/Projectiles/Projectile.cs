@@ -54,7 +54,7 @@ public class Projectile : MonoBehaviour
         if (target == null)
             return;
 
-        if (target.CanCollideWith(this))
+        if (target.CanReceiveHit(this))
         {
             target.OnProjectileCollision(this);
             OnCollision();
