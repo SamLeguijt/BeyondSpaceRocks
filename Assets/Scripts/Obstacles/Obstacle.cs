@@ -11,7 +11,7 @@ public class Obstacle : DestructibleObject, IScoreSource
 
     [SerializeField] private Sprite[] obstacleSprites = null;
 
-    [field: SerializeField] public FallingBehaviour FallBehaviour { get; private set; }
+    [field: SerializeField] public MovementBehaviour FallBehaviour { get; private set; }
 
     [Header("Effect References")]
     [SerializeField] private Animator hitEffectAnimator = null;

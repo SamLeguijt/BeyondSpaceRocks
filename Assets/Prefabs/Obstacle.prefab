@@ -329,7 +329,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5758c9bcdd2254dfea494edacbc7da3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <FallSpeed>k__BackingField: 1
+  <Direction>k__BackingField: {x: 0, y: -1}
+  <MoveSpeed>k__BackingField: 1
 --- !u!1 &7802117457732428307
 GameObject:
   m_ObjectHideFlags: 0
