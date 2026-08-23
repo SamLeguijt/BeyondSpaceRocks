@@ -12,7 +12,6 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
 
     void Awake()
     {
-        // Collider = GetComponent<Collider2D>();
         Collider.isTrigger = true; 
     }
 
@@ -26,13 +25,13 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
     
     public virtual bool CanCollideWith(Projectile projectile)
     {
-        return HP.CanTakeHit(); 
+        return Collider.enabled && HP.CanTakeHit(); 
     }
 
     protected virtual void ReceiveHit(Projectile projectile)
     {
         HP.TakeHitPoints(1);
-        
+
         if (!HP.IsAlive)
         {
             Destruct(projectile);

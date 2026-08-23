@@ -49,7 +49,6 @@ public class Obstacle : DestructibleObject
 
     private void Awake()
     {
-        Debug.Log(" hi");
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteSizeHalfedY = spriteRenderer.sprite.bounds.size.y / 2;
 
@@ -58,6 +57,8 @@ public class Obstacle : DestructibleObject
             int randomIndex = Random.Range(0, obstacleSprites.Length);
             spriteRenderer.sprite = obstacleSprites[randomIndex];
         }
+
+        Collider.enabled = false;
     }
 
     private void Start()
@@ -97,6 +98,7 @@ public class Obstacle : DestructibleObject
     protected virtual void EnterPlay()
     {
         // Enable collision/hit taken 
+        Collider.enabled = true; 
     }
 
     protected virtual void EscapePlay()
@@ -104,6 +106,7 @@ public class Obstacle : DestructibleObject
         AudioManager.Instance?.PlayObjectEscapedSFX();
         ObstacleEscapedEvent?.Invoke(this);
         FallBehaviour.SetActive(false);
+        OnDestruct();
         Destroy(gameObject); // <- Pool
     }
 
@@ -134,7 +137,7 @@ public class Obstacle : DestructibleObject
         float x = transform.position.x;
         float y = transform.position.y;
 
-        Vector2 spriteSizeOffset = spriteRenderer.sprite.bounds.size / 2;
+        Vector2 spriteSizeOffset = spriteRenderer.sprite.bounds.size;
 
         float fieldMinX = playFieldBounds.min.x + spriteSizeOffset.x;
         float fieldMaxX = playFieldBounds.max.x - spriteSizeOffset.x; 

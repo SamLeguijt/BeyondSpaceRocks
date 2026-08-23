@@ -12,13 +12,13 @@ public class Projectile : MonoBehaviour
 
     protected float speed = 0f;
     protected bool isEnabled = false;
-    protected Vector2 screenBounds;
+    protected float playFieldBoundsY;
 
     protected int projectileTargetCollisionLayer { get; private set; } 
 
     public virtual void Instantiate(float speed, ColorData color)
     {
-        screenBounds = GameManager.Instance.GetScreenBounds();
+        playFieldBoundsY = GameManager.Instance.PlayFieldBounds.max.y;
         projectileTargetCollisionLayer = GameManager.Instance.ProjectileTargetCollisionLayer; 
         
         this.speed = speed;
@@ -35,7 +35,7 @@ public class Projectile : MonoBehaviour
 
         transform.position = new Vector2(transform.position.x, transform.position.y + speed * Time.deltaTime);
 
-        if (transform.position.y > screenBounds.y)
+        if (transform.position.y > playFieldBoundsY)
         {
             Destroy(gameObject);
         }
