@@ -19,10 +19,12 @@ public class PlayerWeaponController : MonoBehaviour
 
     public AbstractWeapon CurrentWeapon { get; private set; } =  null;
 
+    public Action<AbstractWeapon> weaponFireEvent;
+
     private void Start()
     {
         if (CurrentWeapon == null)
-            EquipDefaultWeapon();
+            EquipWeapon(new DefaultWeapon(defaultWeaponData));
 
         inputController.ShootInput += OnShootInputReceivedEvent;
         playerColor.OnColorChanged += OnColorChangedEvent;
@@ -37,20 +39,29 @@ public class PlayerWeaponController : MonoBehaviour
         GameManager.Instance.GameEndedEvent -= OnGameEndEvent;
     }
 
+    private void SetCurrentWeapon(AbstractWeapon weapon)
+    {
+        if (weapon == null)
+            weapon = new DefaultWeapon(defaultWeaponData);
+
+        CurrentWeapon = weapon;
+    }
+
     private void OnShootInputReceivedEvent()
     {
         if (!inputController.IsInputActive)
             return;
 
-        ShootBullet();
+        HandleShoot();
     }
 
-    private void EquipDefaultWeapon()
+    public void EquipWeapon(AbstractWeapon weapon)
     {
-        CurrentWeapon = new DefaultWeapon(defaultWeaponData);
+        SetCurrentWeapon(weapon);
+        // todo: Weapon.OnEquip ?
     }
 
-    private void ShootBullet()
+    private void HandleShoot()
     {
         if (!CanShoot())
             return;
@@ -62,10 +73,16 @@ public class PlayerWeaponController : MonoBehaviour
         }
         else
         {
-            weaponAnimator.Play(animatorShootClipName);
-            CurrentWeapon?.Fire(firePoint.position, CurrentColor);
-            cooldownTimer.StartTimer(CurrentWeapon.WeaponData.CooldownSeconds);
+            FireCurrentWeapon();
         }
+    }
+
+    private void FireCurrentWeapon()
+    {
+        weaponAnimator.Play(animatorShootClipName);
+        CurrentWeapon?.Fire(firePoint.position, CurrentColor);
+        weaponFireEvent?.Invoke(CurrentWeapon);
+        cooldownTimer.StartTimer(CurrentWeapon.WeaponData.CooldownSeconds);
     }
 
     private void ReloadWeapon()

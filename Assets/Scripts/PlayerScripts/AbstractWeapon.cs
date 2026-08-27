@@ -7,7 +7,7 @@ public abstract class AbstractWeapon
 {
     public WeaponData WeaponData { get; protected set; } = null;
 
-    protected int CurrentAmmo { get; set; } = 0;
+    public int CurrentAmmo { get; set; } = 0;
     
     public Action OnFire {  get; protected set; } = null;
 
