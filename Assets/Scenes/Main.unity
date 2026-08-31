@@ -2819,7 +2819,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0/0
+  m_text: "\t"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 57c0903ba9e8d294aa689767b1ad874a, type: 2}
   m_sharedMaterial: {fileID: 4162103778757926895, guid: 57c0903ba9e8d294aa689767b1ad874a, type: 2}
@@ -3422,6 +3422,7 @@ MonoBehaviour:
   ammoRoundImage: {fileID: 6769435453593522435, guid: 732865162553e4550b94d4d46c087ad6, type: 3}
   availableRoundColor: {r: 0.43529412, g: 0.30980393, b: 0.101960786, a: 1}
   unavailableRoundColor: {r: 0.43529412, g: 0.30980393, b: 0.101960786, a: 0.08627451}
+  currentRoundColor: {r: 0.8773585, g: 0.58281595, b: 0.045523323, a: 0.9372549}
 --- !u!1 &1370352352
 GameObject:
   m_ObjectHideFlags: 0

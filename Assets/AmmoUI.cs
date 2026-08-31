@@ -16,7 +16,9 @@ public class AmmoUI : MonoBehaviour
 
     [SerializeField] private Color availableRoundColor; 
     [SerializeField] private Color unavailableRoundColor; 
-    
+    [SerializeField] private Color currentRoundColor; 
+
+    private Coroutine reloadCoroutine = null;
     private List<Image> roundsUI = new (); 
 
     void OnEnable()
@@ -24,7 +26,8 @@ public class AmmoUI : MonoBehaviour
         if (weaponController != null)
         {
             weaponController.weaponFireEvent += OnWeaponFireEvent;
-            weaponController.weaponReloadEvent += OnWeaponReloadEvent;
+            weaponController.weaponReloadStartEvent += OnWeaponReloadStartEvent;
+            weaponController.weaponReloadFinishedEvent += OnWeaponReloadFinishEvent;
             weaponController.equipWeaponEvent += OnEquipWeaponEvent;
         }
     }
@@ -34,7 +37,8 @@ public class AmmoUI : MonoBehaviour
         if (weaponController != null)
         {
             weaponController.weaponFireEvent -= OnWeaponFireEvent;
-            weaponController.weaponReloadEvent -= OnWeaponReloadEvent;
+            weaponController.weaponReloadStartEvent -= OnWeaponReloadStartEvent;
+            weaponController.weaponReloadFinishedEvent -= OnWeaponReloadFinishEvent;
             weaponController.equipWeaponEvent -= OnEquipWeaponEvent;        
         }
     }
@@ -48,14 +52,22 @@ public class AmmoUI : MonoBehaviour
         UpdateDisplayText(currentAmmo, maxAmmo);
     }
 
-    private void OnWeaponReloadEvent(AbstractWeapon weapon)
+    private void OnWeaponReloadStartEvent(AbstractWeapon weapon, float duration)
+    {
+        if (reloadCoroutine != null)
+            StopCoroutine(reloadCoroutine);
+
+        int refillAmount = weapon.WeaponData.MaxAmmo - weapon.CurrentAmmo;
+        reloadCoroutine = StartCoroutine(RefillAmmoRoundsRoutine(duration, refillAmount));
+    }
+
+    private void OnWeaponReloadFinishEvent(AbstractWeapon weapon)
     {
         int maxAmount = weapon.WeaponData.MaxAmmo; 
         int available = weapon.CurrentAmmo;
 
-        UpdateAmmoRoundsUI(available, maxAmount);
+        // UpdateAmmoRoundsUI(available, maxAmount);
         UpdateDisplayText(available, maxAmount);
-
     }
 
     private void OnEquipWeaponEvent(AbstractWeapon weapon)
@@ -65,7 +77,24 @@ public class AmmoUI : MonoBehaviour
 
         SetupAmmoRoundsUI(available, maxAmount);
         UpdateDisplayText(available, maxAmount);
+    }
 
+    private IEnumerator RefillAmmoRoundsRoutine(float maxDuration, int roundsToFill)
+    {
+        WaitForSeconds roundInterval = new WaitForSeconds(maxDuration / roundsToFill);
+
+        int startIndex = roundsUI.IndexOf(roundsUI[roundsUI.Count - roundsToFill]);
+        
+        for (int i = 0; i < roundsToFill; i++)
+        {
+            Image roundUI = roundsUI[startIndex + i];
+            SetImageColor(roundUI, currentRoundColor);
+
+            yield return roundInterval;
+            
+            if (i != roundsToFill -1)
+                SetImageColor(roundUI, availableRoundColor);
+        }
     }
 
     private void UpdateDisplayText(int availableRoundsAmount, int maxRoundsAmount)
@@ -114,6 +143,7 @@ public class AmmoUI : MonoBehaviour
         {
             Image uiImage = roundsUI[i];
             Color targetColor = GetImageTargetColor(i, availableAmount);
+
             SetImageColor(uiImage, targetColor);
         }
     }
@@ -123,10 +153,17 @@ public class AmmoUI : MonoBehaviour
         roundsUI.Clear();
     }   
 
-    private Color GetImageTargetColor(int i, int available)
+    private Color GetImageTargetColor(int roundIndex, int availableRoundsAmount)
     {
-        Color targetColor = (i < available) ? availableRoundColor : unavailableRoundColor;
-        return targetColor;
+        Color target;
+        if (roundIndex == (availableRoundsAmount -1))
+            target = currentRoundColor;
+        else if (roundIndex < availableRoundsAmount)
+            target = availableRoundColor;
+        else
+            target = unavailableRoundColor;
+
+        return target;
     }
 
     private void SetImageColor(Image image, Color target)
@@ -154,4 +191,6 @@ public class AmmoUI : MonoBehaviour
             roundsUI.Add(ammoRound);
         }
     }
+
+
 }

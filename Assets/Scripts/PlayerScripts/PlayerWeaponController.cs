@@ -20,7 +20,10 @@ public class PlayerWeaponController : MonoBehaviour
     public AbstractWeapon CurrentWeapon { get; private set; } =  null;
 
     public Action<AbstractWeapon> weaponFireEvent;
-    public Action<AbstractWeapon> weaponReloadEvent; 
+
+    public Action<AbstractWeapon, float> weaponReloadStartEvent; 
+
+    public Action<AbstractWeapon> weaponReloadFinishedEvent; 
     public Action<AbstractWeapon> equipWeaponEvent;
 
     private void Start()
@@ -92,10 +95,13 @@ public class PlayerWeaponController : MonoBehaviour
         if (cooldownTimer.IsRunning)
             cooldownTimer.Complete();
 
+        float reloadDuration = CurrentWeapon.WeaponData.ReloadSeconds;
+
+        weaponReloadStartEvent?.Invoke(CurrentWeapon, reloadDuration);
         cooldownTimer.StartTimer(CurrentWeapon.WeaponData.ReloadSeconds, () => 
         {
             CurrentWeapon.RefillAmmo();
-            weaponReloadEvent?.Invoke(CurrentWeapon);
+            weaponReloadFinishedEvent?.Invoke(CurrentWeapon);
         });
     }
 
