@@ -13,7 +13,7 @@ public class MovementBehaviour : MonoBehaviour
     public void ToggleActive()
     {
         SetActive(!IsActive);
-    }
+    }   
 
     public void SetActive(bool value)
     {

@@ -9,11 +9,17 @@ public class AmmoUI : MonoBehaviour
 {
     [SerializeField] private PlayerWeaponController weaponController;
     [SerializeField] private GameObject ammoPanelUI; 
+    [SerializeField] private Transform roundsUiOrigin; 
+    [SerializeField] private float roundUiOffsetY = 0.1f;
     [SerializeField] private TextMeshProUGUI textAsset; 
-    [SerializeField] private Slider sliderAsset; 
     [SerializeField] private Image ammoRoundImage; 
 
-    [SerializeField] private Color disabledRoundColor; 
+    [SerializeField] private Color availableRoundColor; 
+    [SerializeField] private Color unavailableRoundColor; 
+
+
+    private List<Image> roundsUI = new (); 
+    private Dictionary<int, Image> roundsDict = new();
 
     private bool isSetUp = false;
     private int currentAmmo = 0;
@@ -24,7 +30,9 @@ public class AmmoUI : MonoBehaviour
     {
         if (weaponController != null)
         {
-            weaponController.weaponFireEvent += OnPlayerFireEvent;
+            weaponController.weaponFireEvent += OnWeaponFireEvent;
+            weaponController.weaponReloadEvent += OnWeaponReloadEvent;
+            weaponController.equipWeaponEvent += OnEquipWeaponEvent;
         }
     }
     
@@ -32,52 +40,106 @@ public class AmmoUI : MonoBehaviour
     {
         if (weaponController != null)
         {
-            weaponController.weaponFireEvent -= OnPlayerFireEvent;
+            weaponController.weaponFireEvent -= OnWeaponFireEvent;
+            weaponController.weaponReloadEvent -= OnWeaponReloadEvent;
+            weaponController.equipWeaponEvent -= OnEquipWeaponEvent;        
         }
     }
 
-    private void OnPlayerFireEvent(AbstractWeapon weapon)
+    private void OnWeaponFireEvent(AbstractWeapon weapon)
     {
         currentAmmo = weaponController.CurrentWeapon.CurrentAmmo;
         maxAmmo = weaponController.CurrentWeapon.WeaponData.MaxAmmo;
 
-
         if (!isSetUp)
-            SetupAmmoRoundsUI(maxAmmo);
+            SetupAmmoRoundsUI(currentAmmo ,maxAmmo);
             
-        UpdatePanelUI();
+        UpdateDisplayText(currentAmmo, maxAmmo);
+        UpdateAmmoRoundsUI(currentAmmo, maxAmmo);
     }
 
-    private void UpdatePanelUI()
+    private void OnWeaponReloadEvent(AbstractWeapon weapon)
     {
-        textAsset.text = $"[{currentAmmo} / {maxAmmo}]";
+        int maxAmount = weapon.WeaponData.MaxAmmo; 
+        int available = weapon.CurrentAmmo;
 
-        RemoveAmmoRound();
+        UpdateAmmoRoundsUI(available, maxAmount);
     }
 
-    private void RemoveAmmoRound()
+    private void OnEquipWeaponEvent(AbstractWeapon weapon)
     {
-        Image round = ammoRoundsStack.Pop();
+        int maxAmount = weapon.WeaponData.MaxAmmo; 
+        int available = weapon.CurrentAmmo;
 
-        if (round != null)
+        UpdateAmmoRoundsUI(available, maxAmount);    
+    }
+
+    private void UpdateDisplayText(int availableRoundsAmount, int maxRoundsAmount)
+    {
+        textAsset.text = $"[{availableRoundsAmount} / {maxRoundsAmount}]";
+    }
+
+    private void RemoveTopAmmoRoundUI()
+    {
+        int currentAmmo = weaponController.CurrentWeapon.CurrentAmmo;
+        Image uiImage = roundsUI[currentAmmo];
+
+        if (uiImage != null)
         {
-            round.color = disabledRoundColor;
+            uiImage.color = unavailableRoundColor;
         }
     }
 
-    private void SetupAmmoRoundsUI(int maxAmmoRounds)
+    private void UpdateAmmoRoundsUI(int availableAmount, int maxAmount)
     {
-        Vector2 originPos = sliderAsset.transform.position; 
-        float yOffset = 10f; 
+        if (!isSetUp)
+        {
+            SetupAmmoRoundsUI(availableAmount, maxAmount);
+            return;
+        }
 
+        for (int i = 0; i < maxAmount; i++)
+        {
+            Image uiImage = roundsUI[i];
+            Color targetColor = GetImageTargetColor(i, availableAmount);
+            SetImageColor(uiImage, targetColor);
+        }
+    }
 
-        for (int i = 0; i < maxAmmoRounds; i++)
+    private void ClearAmmoRoundsUI()
+    {
+        roundsUI.Clear();
+    }   
+
+    private Color GetImageTargetColor(int i, int available)
+    {
+        Color targetColor = (i < available) ? availableRoundColor : unavailableRoundColor;
+        return targetColor;
+    }
+
+    private void SetImageColor(Image image, Color target)
+    {
+        if (image.color != target)
+            image.color = target;
+    }
+
+    private void SetupAmmoRoundsUI(int available, int max)
+    {
+        ClearAmmoRoundsUI();
+
+        Vector2 originPos = roundsUiOrigin.position; 
+        float yOffset = roundUiOffsetY; 
+
+        for (int i = 0; i < max; i++)
         {
             float yPos = originPos.y + (yOffset * i); 
             Vector2 position = new Vector2(originPos.x, yPos);
 
             Image ammoRound = Instantiate(ammoRoundImage, position, Quaternion.identity, ammoPanelUI.transform);
-            ammoRoundsStack.Push(ammoRound);
+            Color availability = GetImageTargetColor(i, available);
+            SetImageColor(ammoRound, availability);
+
+            roundsUI.Add(ammoRound);
         }
 
         if (!isSetUp)
