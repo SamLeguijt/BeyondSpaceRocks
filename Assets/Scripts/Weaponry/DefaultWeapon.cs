@@ -27,7 +27,7 @@ public class DefaultWeapon : AbstractWeapon
 
         InstantiateBullet(position, currentColor);
         CurrentAmmo--;
-        AudioManager.Instance.PlayShootSFX();
+        AudioManager.Instance?.PlayShootSFX();
         OnFire?.Invoke();
     }
 
