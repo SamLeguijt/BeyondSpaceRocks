@@ -4,6 +4,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using ColorUtility = Unity.VisualScripting.ColorUtility;
 
 public class AmmoUI : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class AmmoUI : MonoBehaviour
 
     [SerializeField] private Color availableRoundColor; 
     [SerializeField] private Color unavailableRoundColor; 
+    
     private List<Image> roundsUI = new (); 
 
     void OnEnable()
@@ -68,16 +70,36 @@ public class AmmoUI : MonoBehaviour
 
     private void UpdateDisplayText(int availableRoundsAmount, int maxRoundsAmount)
     {
-        string currentAmmoText = availableRoundsAmount.ToString();
+        string result = ""; 
+
+        string availableAmmoText = availableRoundsAmount.ToString();
         string maxAmmoText = maxRoundsAmount.ToString();
 
         if (availableRoundsAmount < 10)
-            currentAmmoText = $"0{currentAmmoText}";
+            availableAmmoText = $"0{availableAmmoText}";
 
         if (maxRoundsAmount < 10)
             maxAmmoText = $"0{maxAmmoText}";
 
-        textAsset.text = $"{currentAmmoText} | {maxAmmoText}";
+        
+        Color32 available = availableRoundColor;
+        Color32 unavailable = unavailableRoundColor;
+
+        string availableHex = $"{available.r:X2}{available.g:X2}{available.b:X2}{available.a:X2}";
+        string unavailableHex = $"{unavailable.r:X2}{unavailable.g:X2}{unavailable.b:X2}{unavailable.a:X2}";
+
+        if (availableRoundsAmount == 0)
+        {
+            result =    $"<color=#{unavailableHex}>{availableAmmoText}</color>" +
+                        $"<color=#{availableHex}> | {maxAmmoText}</color>";
+        }
+        else
+        {
+            result =    $"<color=#{availableHex}>{availableAmmoText}</color>" +
+                        $"<color=#{availableHex}> | {maxAmmoText}</color>";
+        }
+
+        textAsset.text = result;
     }
 
     private void UpdateAmmoRoundsUI(int availableAmount, int maxAmount)
