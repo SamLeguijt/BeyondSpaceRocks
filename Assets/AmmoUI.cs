@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class AmmoUI : MonoBehaviour
 {
     [SerializeField] private PlayerWeaponController weaponController;
-    [SerializeField] private GameObject ammoPanelUI; 
     [SerializeField] private Transform roundsUiOrigin; 
     [SerializeField] private float roundUiOffsetY = 0.1f;
     [SerializeField] private TextMeshProUGUI textAsset; 
@@ -43,8 +42,8 @@ public class AmmoUI : MonoBehaviour
         int currentAmmo = weaponController.CurrentWeapon.CurrentAmmo;
         int maxAmmo = weaponController.CurrentWeapon.WeaponData.MaxAmmo;
             
-        UpdateDisplayText(currentAmmo, maxAmmo);
         UpdateAmmoRoundsUI(currentAmmo, maxAmmo);
+        UpdateDisplayText(currentAmmo, maxAmmo);
     }
 
     private void OnWeaponReloadEvent(AbstractWeapon weapon)
@@ -53,6 +52,8 @@ public class AmmoUI : MonoBehaviour
         int available = weapon.CurrentAmmo;
 
         UpdateAmmoRoundsUI(available, maxAmount);
+        UpdateDisplayText(available, maxAmount);
+
     }
 
     private void OnEquipWeaponEvent(AbstractWeapon weapon)
@@ -61,11 +62,22 @@ public class AmmoUI : MonoBehaviour
         int available = weapon.CurrentAmmo;
 
         SetupAmmoRoundsUI(available, maxAmount);
+        UpdateDisplayText(available, maxAmount);
+
     }
 
     private void UpdateDisplayText(int availableRoundsAmount, int maxRoundsAmount)
     {
-        textAsset.text = $"[{availableRoundsAmount} / {maxRoundsAmount}]";
+        string currentAmmoText = availableRoundsAmount.ToString();
+        string maxAmmoText = maxRoundsAmount.ToString();
+
+        if (availableRoundsAmount < 10)
+            currentAmmoText = $"0{currentAmmoText}";
+
+        if (maxRoundsAmount < 10)
+            maxAmmoText = $"0{maxAmmoText}";
+
+        textAsset.text = $"{currentAmmoText} | {maxAmmoText}";
     }
 
     private void UpdateAmmoRoundsUI(int availableAmount, int maxAmount)
@@ -113,7 +125,7 @@ public class AmmoUI : MonoBehaviour
             float yPos = originPos.y + (yOffset * i); 
             Vector2 position = new Vector2(originPos.x, yPos);
 
-            Image ammoRound = Instantiate(ammoRoundImage, position, Quaternion.identity, ammoPanelUI.transform);
+            Image ammoRound = Instantiate(ammoRoundImage, position, Quaternion.identity, roundsUiOrigin);
             Color availability = GetImageTargetColor(i, available);
             SetImageColor(ammoRound, availability);
 

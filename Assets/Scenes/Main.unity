@@ -2796,7 +2796,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 260, y: -350}
+  m_AnchoredPosition: {x: 285, y: -335}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &893634253
@@ -3416,14 +3416,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponController: {fileID: 1965527312}
-  ammoPanelUI: {fileID: 1320939751}
   roundsUiOrigin: {fileID: 1903862319}
   roundUiOffsetY: 0.25
   textAsset: {fileID: 893634253}
   ammoRoundImage: {fileID: 6769435453593522435, guid: 732865162553e4550b94d4d46c087ad6, type: 3}
   availableRoundColor: {r: 0.43529412, g: 0.30980393, b: 0.101960786, a: 1}
-  unavailableRoundColor: {r: 0.43529412, g: 0.30980393, b: 0.101960786, a: 0.14901961}
-  sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
+  unavailableRoundColor: {r: 0.43529412, g: 0.30980393, b: 0.101960786, a: 0.08627451}
 --- !u!1 &1370352352
 GameObject:
   m_ObjectHideFlags: 0
@@ -4954,7 +4952,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1603864584}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: feaea82aa41ec464c8f5de8dafa048cf, type: 3}
   m_Name: 
@@ -5470,7 +5468,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 260, y: -300}
+  m_AnchoredPosition: {x: 285, y: -305}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &1933874575 stripped
