@@ -16,16 +16,8 @@ public class AmmoUI : MonoBehaviour
 
     [SerializeField] private Color availableRoundColor; 
     [SerializeField] private Color unavailableRoundColor; 
-
-
     private List<Image> roundsUI = new (); 
-    private Dictionary<int, Image> roundsDict = new();
 
-    private bool isSetUp = false;
-    private int currentAmmo = 0;
-    private int maxAmmo = 0; 
-
-    private Stack<Image> ammoRoundsStack = new();
     void OnEnable()
     {
         if (weaponController != null)
@@ -48,11 +40,8 @@ public class AmmoUI : MonoBehaviour
 
     private void OnWeaponFireEvent(AbstractWeapon weapon)
     {
-        currentAmmo = weaponController.CurrentWeapon.CurrentAmmo;
-        maxAmmo = weaponController.CurrentWeapon.WeaponData.MaxAmmo;
-
-        if (!isSetUp)
-            SetupAmmoRoundsUI(currentAmmo ,maxAmmo);
+        int currentAmmo = weaponController.CurrentWeapon.CurrentAmmo;
+        int maxAmmo = weaponController.CurrentWeapon.WeaponData.MaxAmmo;
             
         UpdateDisplayText(currentAmmo, maxAmmo);
         UpdateAmmoRoundsUI(currentAmmo, maxAmmo);
@@ -71,7 +60,7 @@ public class AmmoUI : MonoBehaviour
         int maxAmount = weapon.WeaponData.MaxAmmo; 
         int available = weapon.CurrentAmmo;
 
-        UpdateAmmoRoundsUI(available, maxAmount);    
+        SetupAmmoRoundsUI(available, maxAmount);
     }
 
     private void UpdateDisplayText(int availableRoundsAmount, int maxRoundsAmount)
@@ -79,20 +68,9 @@ public class AmmoUI : MonoBehaviour
         textAsset.text = $"[{availableRoundsAmount} / {maxRoundsAmount}]";
     }
 
-    private void RemoveTopAmmoRoundUI()
-    {
-        int currentAmmo = weaponController.CurrentWeapon.CurrentAmmo;
-        Image uiImage = roundsUI[currentAmmo];
-
-        if (uiImage != null)
-        {
-            uiImage.color = unavailableRoundColor;
-        }
-    }
-
     private void UpdateAmmoRoundsUI(int availableAmount, int maxAmount)
     {
-        if (!isSetUp)
+        if (roundsUI.Count != maxAmount)
         {
             SetupAmmoRoundsUI(availableAmount, maxAmount);
             return;
@@ -141,8 +119,5 @@ public class AmmoUI : MonoBehaviour
 
             roundsUI.Add(ammoRound);
         }
-
-        if (!isSetUp)
-            isSetUp = true;
     }
 }
