@@ -15,9 +15,9 @@ public class ComboMeter : MonoBehaviour
     public Action comboReachedLimitEvent; 
     public Action comboAdvanceEvent; 
     public Action comboDepleteEvent; 
-    public Action comboReachedMinEvent;
+    public Action comboFullyDepletedEvent;
 
-    private Timer comboIntervalTimer; 
+    private Timer comboIntervalTimer;
     private Timer comboCooldownTimer;
     private Coroutine depletionCoroutine = null;
 
@@ -31,6 +31,9 @@ public class ComboMeter : MonoBehaviour
             DepletionIntervalAmount = 1;
         }
         
+        comboIntervalTimer = new Timer(isPersistant: true);
+        comboCooldownTimer = new Timer(isPersistant: true);
+
         CurrentValue = 0;
     }
 
@@ -41,7 +44,7 @@ public class ComboMeter : MonoBehaviour
     }
 
     void Update()
-    {
+    {   
         if (Input.GetKeyDown(KeyCode.I))
         {
             Advance(1);
@@ -51,12 +54,7 @@ public class ComboMeter : MonoBehaviour
             Deplete(1);
         }
 
-        float lastFrameValue = CurrentValue; 
-
-        if (CurrentValue != lastFrameValue)
-        {
-            Debug.Log(CurrentValue);
-        }     
+        Debug.Log(CurrentValue);
     }
 
     public bool HasReachedMax()
@@ -107,6 +105,11 @@ public class ComboMeter : MonoBehaviour
     private void LimitReached()
     {
         comboReachedLimitEvent?.Invoke();
+    }
+
+    private void MinimumReached()
+    {
+        comboFullyDepletedEvent?.Invoke();
     }
 
     private void StartDepletion()

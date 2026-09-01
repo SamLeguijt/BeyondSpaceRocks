@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class Timer : MonoBehaviour 
+public class Timer  
 {
     public float Duration {  get; private set; }
     public float Remaining {  get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsFinished { get; private set; }
 
-    private float currentTime; 
-
     private Action onCompletionCallback = null; 
+    private bool destructOnCompletion = false;
+
+    public Timer(bool isPersistant)
+    {
+        TimerController.Subscribe(this);
+        destructOnCompletion = !isPersistant;
+    }
 
     public void StartTimer(float durationSeconds, Action callback = null)
     {
@@ -34,21 +39,18 @@ public class Timer : MonoBehaviour
         onCompletionCallback = null;
     }
 
-    private void Update()
+    public void Tick(float deltaTime)
     {
-        if (IsRunning && !IsFinished)
-            Tick();
-    }
+        if (!IsRunning || IsFinished)
+            return;
 
-    public void Tick()
-    {
         if (Remaining <= 0)
         {
             Complete();
         }
         else
         {
-            Remaining -= Time.deltaTime;
+            Remaining -= deltaTime;
         }
     }
 
@@ -57,5 +59,13 @@ public class Timer : MonoBehaviour
         IsRunning = false; 
         IsFinished = true;       
         onCompletionCallback?.Invoke(); 
+
+        if (destructOnCompletion)
+            Destruct();
+    }
+
+    private void Destruct()
+    {
+        TimerController.Unsubscribe(this);
     }
 }

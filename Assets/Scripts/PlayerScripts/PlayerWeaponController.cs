@@ -26,11 +26,19 @@ public class PlayerWeaponController : MonoBehaviour
     public Action<AbstractWeapon> weaponReloadFinishedEvent; 
     public Action<AbstractWeapon> equipWeaponEvent;
 
+    void Awake()
+    {
+        cooldownTimer = new Timer(isPersistant: true);
+    }
+    
     private void Start()
     {
         if (CurrentWeapon == null)
             EquipWeapon(new DefaultWeapon(defaultWeaponData));
+    }
 
+    void OnEnable()
+    {
         inputController.ShootInput += OnShootInputReceivedEvent;
         playerColor.OnColorChanged += OnColorChangedEvent;
         GameManager.Instance.GameStartedEvent += OnGameStartEvent;
