@@ -5,11 +5,13 @@ using UnityEngine;
 
 public class ComboMeter : MonoBehaviour
 {
+    public ComboData data; 
     public float CurrentValue { get; private set; }
     public float MaxValue { get; private set; }
     public float IntervalDelaySeconds { get; private set; }
     public float RechargeDuration { get; private set; }
-    public float depletionIntervalAmount; 
+    public float DepletionIntervalAmount { get; private set; } 
+    
     public Action comboReachedLimitEvent; 
     public Action comboAdvanceEvent; 
     public Action comboDepleteEvent; 
@@ -18,11 +20,43 @@ public class ComboMeter : MonoBehaviour
     private Timer comboIntervalTimer; 
     private Timer comboCooldownTimer;
     private Coroutine depletionCoroutine = null;
-    
+
+    void Awake()
+    {
+        if (data != null)
+        {
+            MaxValue = data.Limit;
+            IntervalDelaySeconds = data.comboIntervalSeconds;
+            RechargeDuration = data.comboRechargeCooldownSeconds;
+            DepletionIntervalAmount = 1;
+        }
+        
+        CurrentValue = 0;
+    }
+
     public ComboMeter(ComboData data)
     {
         MaxValue = data.Limit;
         CurrentValue = 0; 
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Advance(1);
+        }
+        else if (Input.GetKeyDown(KeyCode.P))
+        {
+            Deplete(1);
+        }
+
+        float lastFrameValue = CurrentValue; 
+
+        if (CurrentValue != lastFrameValue)
+        {
+            Debug.Log(CurrentValue);
+        }     
     }
 
     public bool HasReachedMax()
@@ -82,7 +116,7 @@ public class ComboMeter : MonoBehaviour
             StopCoroutine(depletionCoroutine);
         }
 
-        depletionCoroutine = StartCoroutine(DepleteOverTimeRoutine(RechargeDuration, depletionIntervalAmount));
+        depletionCoroutine = StartCoroutine(DepleteOverTimeRoutine(RechargeDuration, DepletionIntervalAmount));
     }
 
     private IEnumerator DepleteOverTimeRoutine(float maxDuration, float depleteAmountPerInterval)
