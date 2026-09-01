@@ -5,134 +5,162 @@ using UnityEngine;
 
 public class ComboMeter : MonoBehaviour
 {
-    public ComboData data; 
-    public float CurrentValue { get; private set; }
-    public float MaxValue { get; private set; }
-    public float IntervalDelaySeconds { get; private set; }
-    public float RechargeDuration { get; private set; }
-    public float DepletionIntervalAmount { get; private set; } 
-    
-    public Action comboReachedLimitEvent; 
-    public Action comboAdvanceEvent; 
-    public Action comboDepleteEvent; 
-    public Action comboFullyDepletedEvent;
+    [field: SerializeField] public float MinValue { get; private set; } = 0;
+    [field: SerializeField] public float MaxValue { get; private set; } = 0;
 
-    private Timer comboIntervalTimer;
-    private Timer comboCooldownTimer;
+    public float CurrentValue { get; private set; } = 0;
+    public bool IsEmpty => CurrentValue <= MinValue;
+    public bool IsFull => CurrentValue >= MaxValue;
+
+    public Action<float> valueChangedEvent; 
+
     private Coroutine depletionCoroutine = null;
 
     void Awake()
     {
-        if (data != null)
-        {
-            MaxValue = data.Limit;
-            IntervalDelaySeconds = data.comboIntervalSeconds;
-            RechargeDuration = data.comboRechargeCooldownSeconds;
-            DepletionIntervalAmount = 1;
-        }
-        
-        comboIntervalTimer = new Timer(isPersistant: true);
-        comboCooldownTimer = new Timer(isPersistant: true);
-
-        CurrentValue = 0;
-    }
-
-    public ComboMeter(ComboData data)
-    {
-        MaxValue = data.Limit;
-        CurrentValue = 0; 
+        CurrentValue = MinValue;
     }
 
     void Update()
     {   
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            Advance(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.P))
-        {
-            Deplete(1);
-        }
-
-        Debug.Log(CurrentValue);
-    }
-
-    public bool HasReachedMax()
-    {
-        return CurrentValue >= MaxValue; 
-    }
-
-    public bool CanAdvance()
-    {
-        bool cooldownCheck = !comboCooldownTimer.IsRunning && comboIntervalTimer.IsRunning;
-        bool limitCheck =  CurrentValue < MaxValue;
-
-        return cooldownCheck && limitCheck;
-    }
-
-    private bool CanDeplete()
-    {
-        bool cooldownCheck = comboCooldownTimer.IsRunning;
-        bool valueCheck = CurrentValue > 0; 
-
-        return cooldownCheck && valueCheck;
+        // if (Input.GetKeyDown(KeyCode.O))
+        // {
+        //     Advance(1);
+        // }
+        // else if (Input.GetKeyDown(KeyCode.P))
+        // {
+        //     Deplete(1);
+        // }
+        // else if (Input.GetKeyDown(KeyCode.U))
+        // {
+        //     DepleteOverTime(3);
+        // }
+        // else if (Input.GetKeyDown(KeyCode.I))
+        // {
+        //     DepleteInTicks(0.5f, 5);
+        // }
     }
 
     public void Advance(float amount)
     {
-        if (CanAdvance())
-        {
-            CurrentValue = Mathf.Min(CurrentValue + amount, MaxValue);
-            comboAdvanceEvent?.Invoke();
+        if (amount <= 0)
+            return;
 
-            comboIntervalTimer.StartTimer(IntervalDelaySeconds, StartDepletion);
-        }
-        else if (HasReachedMax())
+        float newValue = Mathf.Min(CurrentValue + amount, MaxValue);
+        float changedAmount = newValue - CurrentValue;
+
+        CurrentValue = newValue;
+
+        if (!Mathf.Approximately(changedAmount, 0f))
         {
-            LimitReached();
+            valueChangedEvent?.Invoke(changedAmount);
+            
+            // Debug.Log("Advanced to: " + CurrentValue);
         }
     }
 
     public void Deplete(float amount)
     {
-        if (CanDeplete())
+        if (amount <= 0)
+            return;
+
+        float newValue = Mathf.Max(CurrentValue - amount, MinValue);
+        float changedAmount = newValue - CurrentValue;
+
+        CurrentValue = newValue;
+
+        if (!Mathf.Approximately(changedAmount, 0f))
         {
-            CurrentValue = Mathf.Max(CurrentValue - amount, 0);
-            comboDepleteEvent?.Invoke();
+            valueChangedEvent?.Invoke(changedAmount);
+            
+            // Debug.Log("Depleted to: " + CurrentValue);
         }
     }
 
-    private void LimitReached()
-    {
-        comboReachedLimitEvent?.Invoke();
-    }
-
-    private void MinimumReached()
-    {
-        comboFullyDepletedEvent?.Invoke();
-    }
-
-    private void StartDepletion()
+    public void DepleteOverTime(float seconds)
     {
         if (depletionCoroutine != null)
         {
             StopCoroutine(depletionCoroutine);
         }
 
-        depletionCoroutine = StartCoroutine(DepleteOverTimeRoutine(RechargeDuration, DepletionIntervalAmount));
+        depletionCoroutine = StartCoroutine(DepleteOverTimeRoutine(seconds));
+        Debug.Log("Start DOT");
     }
 
-    private IEnumerator DepleteOverTimeRoutine(float maxDuration, float depleteAmountPerInterval)
+    public void DepleteInTicks(float amountPerTick, float maxDuration)
     {
-        float depletionInterval = CurrentValue / maxDuration;
-
-        WaitForSeconds intervalDelay = new WaitForSeconds(depletionInterval);
-
-        while (CanDeplete())
+        if (depletionCoroutine != null)
         {
-            yield return intervalDelay;
-
-            Deplete(depleteAmountPerInterval);
+            StopCoroutine(depletionCoroutine);
         }
+
+        depletionCoroutine = StartCoroutine(DepleteTicksOverTimeRoutine(amountPerTick, maxDuration));
+    }
+
+    private IEnumerator DepleteTicksOverTimeRoutine(float amountPerTick, float maxDuration)
+    {
+        if (maxDuration <= 0)
+        {
+            Deplete(CurrentValue - MinValue);
+            depletionCoroutine = null;
+            yield break;
+        }
+
+        float amountToDeplete = CurrentValue - MinValue;
+
+        if (amountToDeplete <= 0)
+        {
+            depletionCoroutine = null;
+            yield break;
+        }
+        
+        if (amountPerTick <= 0)
+        amountPerTick = 0.01f;
+    
+        int amountOfTicks = Mathf.CeilToInt((CurrentValue - MinValue) / amountPerTick);
+        float tickInterval = maxDuration / amountOfTicks;
+
+        WaitForSeconds tickDelay = new WaitForSeconds(tickInterval);
+
+        for (int i = 0; i < amountOfTicks; i++)
+        {
+            yield return tickDelay;
+
+            Deplete(amountPerTick);
+        }
+
+        Deplete(CurrentValue - MinValue);
+        depletionCoroutine = null;
+    }
+
+    private IEnumerator DepleteOverTimeRoutine(float maxDuration)
+    {
+        if (maxDuration <= 0)
+        {
+            Deplete(CurrentValue - MinValue);
+            depletionCoroutine = null;
+            yield break;
+        }
+
+        float startValue = CurrentValue;
+        float elapsed = 0f;
+        float maxSeconds = maxDuration;
+
+        while (elapsed < maxSeconds)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = Mathf.Clamp01(elapsed / maxSeconds);
+            float targetValue = Mathf.Lerp(startValue, MinValue, t);
+            float amountToDeplete = CurrentValue - targetValue;
+            
+            Deplete(amountToDeplete);
+
+            yield return null;
+        }
+
+        Deplete(CurrentValue - MinValue);
+        depletionCoroutine = null;
     }
 }
