@@ -6,10 +6,20 @@ public class TimerController : MonoBehaviour
 {
     public static List<Timer> timers = new();
 
+    void Awake()
+    {
+        if (timers != null)
+            timers.Clear();
+
+        timers = new List<Timer>();
+    }
+
     public static void Subscribe(Timer timer)
     {
         if (!timers.Contains(timer))
             timers.Add(timer);
+
+        Debug.Log("Subscribed");
     }
 
     public static void Unsubscribe(Timer timer)
@@ -21,8 +31,8 @@ public class TimerController : MonoBehaviour
     void Update()
     {
         int timersAmount = timers.Count;
-        // Debug.Log("Timers: " + timersAmount);
-        if (timersAmount > 1)
+
+        if (timersAmount > 0)
         {
             for (int i = 0; i < timersAmount; i++)
             {

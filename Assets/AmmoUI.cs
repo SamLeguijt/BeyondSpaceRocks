@@ -17,6 +17,8 @@ public class AmmoUI : MonoBehaviour
     [SerializeField] private Color availableRoundColor; 
     [SerializeField] private Color unavailableRoundColor; 
     [SerializeField] private Color currentRoundColor; 
+    [SerializeField] private Color refillRoundColor;
+    [SerializeField] private Color refillCurrentRoundColor;
 
     private Coroutine reloadCoroutine = null;
     private List<Image> roundsUI = new (); 
@@ -88,12 +90,11 @@ public class AmmoUI : MonoBehaviour
         for (int i = 0; i < roundsToFill; i++)
         {
             Image roundUI = roundsUI[startIndex + i];
-            SetImageColor(roundUI, currentRoundColor);
-
+                SetImageColor(roundUI, refillCurrentRoundColor);
             yield return roundInterval;
             
             if (i != roundsToFill -1)
-                SetImageColor(roundUI, availableRoundColor);
+                SetImageColor(roundUI, refillRoundColor);    
         }
     }
 

@@ -3423,6 +3423,8 @@ MonoBehaviour:
   availableRoundColor: {r: 0.43529412, g: 0.30980393, b: 0.101960786, a: 1}
   unavailableRoundColor: {r: 0.43529412, g: 0.30980393, b: 0.101960786, a: 0.08627451}
   currentRoundColor: {r: 0.8773585, g: 0.58281595, b: 0.045523323, a: 0.9372549}
+  refillRoundColor: {r: 0, g: 0.6862745, b: 1, a: 1}
+  refillCurrentRoundColor: {r: 0, g: 0.89951175, b: 0.9339623, a: 1}
 --- !u!1 &1370352352
 GameObject:
   m_ObjectHideFlags: 0
@@ -4634,7 +4636,7 @@ GameObject:
   - component: {fileID: 1564525778}
   - component: {fileID: 1564525782}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4954,7 +4956,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1603864584}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: feaea82aa41ec464c8f5de8dafa048cf, type: 3}
   m_Name: 
@@ -5379,7 +5381,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd60440227e6a4be19bf7384ded3841f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 102255b71998d444d951bcc9f7db5878, type: 2}
+  <MinValue>k__BackingField: 0
+  <MaxValue>k__BackingField: 10
 --- !u!1 &1853361655
 GameObject:
   m_ObjectHideFlags: 0
@@ -5525,7 +5528,6 @@ GameObject:
   - component: {fileID: 1965527308}
   - component: {fileID: 1965527310}
   - component: {fileID: 1965527312}
-  - component: {fileID: 1965527311}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -5686,23 +5688,6 @@ MonoBehaviour:
   baseSprite: {fileID: -817926505907784346, guid: 3e57fd5bb744e1f4998cf448f6e25e60, type: 3}
   slightDamagedSprite: {fileID: -3269202598301612544, guid: e89bf4cc7ff998540b9c1bc004733ab7, type: 3}
   heavyDamagedSprite: {fileID: 4149434600455196728, guid: 6a9e47c7575547347940cf14d433b6d1, type: 3}
---- !u!114 &1965527311
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1965527300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e152b5f830975f44f8a720559ed70dd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Duration>k__BackingField: 0
-  <Remaining>k__BackingField: 0
-  <IsRunning>k__BackingField: 0
-  <IsFinished>k__BackingField: 0
-  currentTime: 0
 --- !u!114 &1965527312
 MonoBehaviour:
   m_ObjectHideFlags: 0

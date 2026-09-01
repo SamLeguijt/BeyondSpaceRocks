@@ -30,7 +30,7 @@ public class PlayerWeaponController : MonoBehaviour
     {
         cooldownTimer = new Timer(isPersistant: true);
     }
-    
+
     private void Start()
     {
         if (CurrentWeapon == null)
