@@ -20,6 +20,9 @@ public class AmmoUI : MonoBehaviour
     [SerializeField] private Color refillRoundColor;
     [SerializeField] private Color refillCurrentRoundColor;
 
+    [SerializeField] private float refillFadeDelay = 0.25f;
+    [SerializeField] private float refillFadeDuration = 0.05f;
+
     private Coroutine reloadCoroutine = null;
     private List<Image> roundsUI = new (); 
 
@@ -91,10 +94,55 @@ public class AmmoUI : MonoBehaviour
         {
             Image roundUI = roundsUI[startIndex + i];
                 SetImageColor(roundUI, refillCurrentRoundColor);
+
             yield return roundInterval;
             
             if (i != roundsToFill -1)
                 SetImageColor(roundUI, refillRoundColor);    
+
+            if (i > (roundsToFill / 2))
+            {
+                StartCoroutine(FadeRefilledRounds(startIndex, roundsToFill));
+            }
+        }
+
+        //yield return StartCoroutine(FadeRefilledRounds(startIndex, roundsToFill));
+    }
+
+    private IEnumerator FadeImageColor(Image image, Color target, float duration)
+    {
+        Color start = image.color;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = Mathf.Clamp01(elapsed / duration);
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            image.color = Color.Lerp(start, target, t);
+
+            yield return null;
+        }
+
+        image.color = target;
+    }
+
+    private IEnumerator FadeRefilledRounds(int startIndex, int roundsToFill)
+    {
+        float fadeDurationPerRound = refillFadeDuration / roundsToFill;
+
+        for (int i = 0; i < roundsToFill; i++)
+        {
+            int roundIndex = startIndex + i;
+            Image roundUI = roundsUI[roundIndex];
+
+            Color targetColor = GetImageTargetColor(roundIndex,roundsUI.Count);
+
+            StartCoroutine(FadeImageColor(roundUI,targetColor, fadeDurationPerRound));
+
+            yield return new WaitForSeconds(fadeDurationPerRound);
         }
     }
 
