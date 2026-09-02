@@ -23,7 +23,9 @@ public class AmmoUI : MonoBehaviour
     [SerializeField] private float refillFadeDelay = 0.25f;
     [SerializeField] private float refillFadeDuration = 0.05f;
 
-    private Coroutine reloadCoroutine = null;
+    [SerializeField, Range(0,1)] private float animationRefillFadeSplit = 0.5f;
+
+    private Coroutine reloadAnimationCoroutine = null;
     private List<Image> roundsUI = new (); 
 
     void OnEnable()
@@ -59,11 +61,12 @@ public class AmmoUI : MonoBehaviour
 
     private void OnWeaponReloadStartEvent(AbstractWeapon weapon, float duration)
     {
-        if (reloadCoroutine != null)
-            StopCoroutine(reloadCoroutine);
+        if (reloadAnimationCoroutine != null)
+            StopCoroutine(reloadAnimationCoroutine);
 
         int refillAmount = weapon.WeaponData.MaxAmmo - weapon.CurrentAmmo;
-        reloadCoroutine = StartCoroutine(RefillAmmoRoundsRoutine(duration, refillAmount));
+       
+        AnimateReload(refillAmount, weapon.WeaponData.ReloadSeconds);
     }
 
     private void OnWeaponReloadFinishEvent(AbstractWeapon weapon)
@@ -71,7 +74,7 @@ public class AmmoUI : MonoBehaviour
         int maxAmount = weapon.WeaponData.MaxAmmo; 
         int available = weapon.CurrentAmmo;
 
-        // UpdateAmmoRoundsUI(available, maxAmount);
+        UpdateAmmoRoundsUI(available, maxAmount);
         UpdateDisplayText(available, maxAmount);
     }
 
@@ -84,8 +87,51 @@ public class AmmoUI : MonoBehaviour
         UpdateDisplayText(available, maxAmount);
     }
 
+    private void AnimateReload(int amountReloaded, float maxDuration)
+    {
+        if (reloadAnimationCoroutine != null)
+            StopCoroutine(reloadAnimationCoroutine);
+
+        reloadAnimationCoroutine = StartCoroutine(AnimationCoroutine(amountReloaded, maxDuration));
+    }
+
+    private IEnumerator AnimationCoroutine(int amountReloaded, float maxDuration)
+    {
+        int startIndex = roundsUI.IndexOf(roundsUI[roundsUI.Count - amountReloaded]);
+        float refillDurationTotal = maxDuration * animationRefillFadeSplit;
+        float fadeOutDurationTotal = maxDuration - refillDurationTotal;
+
+        yield return StartCoroutine(RefillAmmoRoundsRoutine(refillDurationTotal, amountReloaded));
+        
+        StartCoroutine(FadeRoundsToDefaultColorRoutine(amountReloaded, fadeOutDurationTotal));
+    }
+
+    private IEnumerator FadeRoundsToDefaultColorRoutine(int roundsToFill, float maxDuration)
+    {
+        float roundDelay = maxDuration / roundsToFill;
+        WaitForSeconds roundInterval = new WaitForSeconds(maxDuration / roundsToFill);
+        Debug.Log("Default fade start, time: " + maxDuration);
+
+        int startIndex = roundsUI.IndexOf(roundsUI[roundsUI.Count - roundsToFill]);
+        
+        for (int i = 0; i < roundsToFill; i++)
+        {
+            int currentRoundIndex = startIndex + i;
+            Image roundUI = roundsUI[currentRoundIndex];
+
+            StartCoroutine(ImageColorFade(roundUI, availableRoundColor, roundDelay));
+            yield return roundInterval;
+
+            if (i == roundsToFill -1)
+                SetImageColor(roundUI, currentRoundColor);  
+        }
+
+        reloadAnimationCoroutine = null;
+    }
+
     private IEnumerator RefillAmmoRoundsRoutine(float maxDuration, int roundsToFill)
     {
+        Debug.Log("Refill start, time: " + maxDuration);
         WaitForSeconds roundInterval = new WaitForSeconds(maxDuration / roundsToFill);
 
         int startIndex = roundsUI.IndexOf(roundsUI[roundsUI.Count - roundsToFill]);
@@ -93,32 +139,61 @@ public class AmmoUI : MonoBehaviour
         for (int i = 0; i < roundsToFill; i++)
         {
             Image roundUI = roundsUI[startIndex + i];
-                SetImageColor(roundUI, refillCurrentRoundColor);
+            SetImageColor(roundUI, refillCurrentRoundColor);
 
             yield return roundInterval;
             
             if (i != roundsToFill -1)
                 SetImageColor(roundUI, refillRoundColor);    
-
-            if (i > (roundsToFill / 2))
-            {
-                StartCoroutine(FadeRefilledRounds(startIndex, roundsToFill));
-            }
         }
-
-        //yield return StartCoroutine(FadeRefilledRounds(startIndex, roundsToFill));
     }
 
-    private IEnumerator FadeImageColor(Image image, Color target, float duration)
+    private IEnumerator AnimateReloadRoutine(int reloadAmount, float maxDuration)
+    {
+        int startIndex = roundsUI.IndexOf(roundsUI[roundsUI.Count - reloadAmount]);
+        float refillDurationTotal = maxDuration * animationRefillFadeSplit;
+        float fadeOutDurationTotal = maxDuration - refillDurationTotal;
+        float roundDelaySeconds = refillDurationTotal / reloadAmount;
+        // float rounddelay = (maxDuration - fadeDuration) / (reloadAmount - 1);
+
+        WaitForSeconds roundDelay = new(roundDelaySeconds);
+
+        for (int i = 0; i < reloadAmount; i++)
+        {
+            int currentRoundIndex = startIndex + i;
+            Image roundUI = roundsUI[currentRoundIndex];
+            
+            float fadeOutDuration = 0.5f;
+            float fadeOutDelay = 1f;
+
+            // Directly sets to refillCurrentColor, then fades back to original 
+            StartCoroutine(TemporaryImageFade(roundUI, refillCurrentRoundColor, 0f, fadeOutDuration, fadeOutDelay));
+
+            // Delay between starting next round animation
+            yield return roundDelay;
+        }
+    }
+
+    private IEnumerator TemporaryImageFade(Image image, Color target, float fadeInDuration, float fadeOutDuration, float fadeOutDelay)
+    {
+        Color startColor = image.color;
+        yield return StartCoroutine(ImageColorFade(image, target, fadeInDuration));
+
+        yield return new WaitForSeconds(fadeOutDelay);
+        yield return StartCoroutine(ImageColorFade(image, startColor, fadeOutDuration));
+
+    }
+
+    private IEnumerator ImageColorFade(Image image, Color target, float fadeDuration)
     {
         Color start = image.color;
         float elapsed = 0f;
 
-        while (elapsed < duration)
+        while (elapsed < fadeDuration)
         {
             elapsed += Time.deltaTime;
 
-            float t = Mathf.Clamp01(elapsed / duration);
+            float t = Mathf.Clamp01(elapsed / fadeDuration);
             t = Mathf.SmoothStep(0f, 1f, t);
 
             image.color = Color.Lerp(start, target, t);
@@ -129,9 +204,9 @@ public class AmmoUI : MonoBehaviour
         image.color = target;
     }
 
-    private IEnumerator FadeRefilledRounds(int startIndex, int roundsToFill)
+    private IEnumerator FadeRoundsToDefaultColor(int startIndex, int roundsToFill, float maxDuration)
     {
-        float fadeDurationPerRound = refillFadeDuration / roundsToFill;
+        float fadeDurationPerRound = maxDuration / roundsToFill;
 
         for (int i = 0; i < roundsToFill; i++)
         {
@@ -139,8 +214,7 @@ public class AmmoUI : MonoBehaviour
             Image roundUI = roundsUI[roundIndex];
 
             Color targetColor = GetImageTargetColor(roundIndex,roundsUI.Count);
-
-            StartCoroutine(FadeImageColor(roundUI,targetColor, fadeDurationPerRound));
+            StartCoroutine(ImageColorFade(roundUI, targetColor, fadeDurationPerRound));
 
             yield return new WaitForSeconds(fadeDurationPerRound);
         }
@@ -148,7 +222,7 @@ public class AmmoUI : MonoBehaviour
 
     private void UpdateDisplayText(int availableRoundsAmount, int maxRoundsAmount)
     {
-        string result = ""; 
+        string result;
 
         string availableAmmoText = availableRoundsAmount.ToString();
         string maxAmmoText = maxRoundsAmount.ToString();
