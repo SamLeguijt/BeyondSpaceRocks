@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class EventBus : IEventBus
 {
     private Dictionary<Type, List<Delegate>> handlers = new();
-
+    
     public void Publish<T>(T @event) where T : IEvent
     {
         var eventType = typeof(T);

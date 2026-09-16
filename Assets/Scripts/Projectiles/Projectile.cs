@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public class Projectile : MonoBehaviour, IProjectile
 {
     public bool HasCollided {  get; protected set; }
     public ColorData ColorData { get; protected set; }
@@ -43,16 +43,19 @@ public class Projectile : MonoBehaviour
         if (!isEnabled)
             return;
 
-        IProjectileTarget target = collision.GetComponent<IProjectileTarget>();
 
-        if (target == null)
-            return;
+        //IProjectileTarget target = collision.GetComponent<IProjectileTarget>();
 
-        if (target.CanInteractWith(this))
-        {
-            target.InteractWith(this);
-            OnCollision();
-        }
+        //if (target == null)
+        //    return;
+
+        //if (target.CanInteractWith(this))
+        //{
+        //    target.InteractWith(this);
+        //    OnCollision();
+        //}
+
+        // Replace with event.
     }
 
     protected virtual void OnCollision()
