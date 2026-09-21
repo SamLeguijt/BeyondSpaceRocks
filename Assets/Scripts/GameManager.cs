@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
+/// TODO: Refactor this class to split responsibilities 
+/// - System creation + wiring
+/// - Game Speed class
+/// - more.
+///
+/// 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
@@ -41,6 +48,8 @@ public class GameManager : MonoBehaviour
 
     private int spawnerBudgetsEmptied = 0;
 
+    private GameSystems gameSystems = null;
+
     private void OnEnable()
     {
         if (PlayerHealth != null)
@@ -73,7 +82,11 @@ public class GameManager : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = false;
+
+        if (gameSystems == null)
+            gameSystems = GameSystemsFactory.Create();
     }
+
     private void Start()
     {
         if (MainCamera == null)
