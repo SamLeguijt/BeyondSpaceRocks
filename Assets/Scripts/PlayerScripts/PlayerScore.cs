@@ -27,7 +27,7 @@ public class PlayerScore : MonoBehaviour
         DestructibleObject.ObjectDestroyEvent -= OnObjectDestroyed;
     }
 
-    private void OnObjectDestroyed(DestructibleObject obstacle, Projectile projectile)
+    private void OnObjectDestroyed(DestructibleObject obstacle, IProjectile projectile)
     {
         IScoreSource source = obstacle as IScoreSource; 
 

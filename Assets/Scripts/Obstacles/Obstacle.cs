@@ -72,10 +72,12 @@ public class Obstacle : DestructibleObject, IScoreSource
         FallBehaviour.SetActive(true);
     }
 
-    public override bool CanInteractWith(Projectile projectile)
+    public override bool CanInteractWith(IProjectile projectile)
     {
-        return base.CanInteractWith(projectile) 
-                && ColorData.ColorType == projectile.ColorData.ColorType;
+        return base.CanInteractWith(projectile); 
+
+        // TODO: Color check should be done in ProjectileSystem.
+                //&& ColorData.ColorType == projectile.ColorData.ColorType;
     }
 
     protected override void HandleDestruction()

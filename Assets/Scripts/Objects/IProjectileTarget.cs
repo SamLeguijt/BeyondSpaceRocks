@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface IProjectileTarget
 {
-    public void InteractWith(Projectile projectile);
-    public bool CanInteractWith(Projectile projectile);
+    public void InteractWith(IProjectile projectile);
+    public bool CanInteractWith(IProjectile projectile);
 }

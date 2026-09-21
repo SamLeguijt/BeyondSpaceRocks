@@ -14,6 +14,8 @@ public class Projectile : MonoBehaviour, IProjectile
     protected bool isEnabled = false;
     protected float playFieldBoundsY;
 
+    public Vector3 Position => transform.position;
+
     public virtual void Instantiate(float speed, ColorData color)
     {
         playFieldBoundsY = GameManager.Instance.PlayFieldBounds.max.y;

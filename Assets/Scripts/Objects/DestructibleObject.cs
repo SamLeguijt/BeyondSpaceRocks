@@ -7,7 +7,7 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
 {
     [field: SerializeField] public HitPointComponent HP { get; private set; } 
     [field: SerializeField] public BoxCollider2D Collider { get; protected set; }
-    public delegate void DestructionEventHandler(DestructibleObject destroyed, Projectile by); 
+    public delegate void DestructionEventHandler(DestructibleObject destroyed, IProjectile by); 
     public static event DestructionEventHandler ObjectDestroyEvent;
 
     void Awake()
@@ -20,17 +20,17 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
         Collider.enabled = value;
     }
 
-    public virtual bool CanInteractWith(Projectile projectile)
+    public virtual bool CanInteractWith(IProjectile projectile)
     {
         return Collider.enabled && HP.CanTakeHit(); 
     }
 
-    public void InteractWith(Projectile projectile) 
+    public void InteractWith(IProjectile projectile) 
     {
         ReceiveHit(projectile);
     }
 
-    protected virtual void ReceiveHit(Projectile projectile)
+    protected virtual void ReceiveHit(IProjectile projectile)
     {
         HP.TakeHitPoints(1);
 
@@ -40,7 +40,7 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
         }
     }
 
-    protected void DestructObject(Projectile destroyedBy = null)
+    protected void DestructObject(IProjectile destroyedBy = null)
     {
         SetColliderEnabled(false);
         HandleDestruction();
