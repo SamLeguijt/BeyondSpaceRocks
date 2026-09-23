@@ -1,77 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour, IProjectile
+public class BaseProjectile : MonoBehaviour, IProjectile
 {
-    public bool HasCollided {  get; protected set; }
+    public ProjectileData ConfigData { get; private set; }
     public ColorData ColorData { get; protected set; }
+    public Action<BaseProjectile, Collider2D> ProjectileCollisionEvent; 
 
-    [Header("References")]
+    [Header("Component References")]
     [SerializeField] protected SpriteRenderer spriteRenderer = null;
-
-    protected float speed = 0f;
-    protected bool isEnabled = false;
-    protected float playFieldBoundsY;
+    [SerializeField] protected MovementBehaviour Movement = null;
 
     public Vector3 Position => transform.position;
+    public EInteractionRule InteractionRule => ConfigData.InteractionRule;
+    public EProjectileCollisionResponse CollisionResponse => ConfigData.CollisionResponse;
 
-    public EInteractionRule InteractionRule => data.interactionRule;
-    public EProjectileCollisionResponse CollisionResponse => data.collisionResponse;
-    ProjectileData data;
-
-    public virtual void Instantiate(ProjectileData data)
+    public  void Instantiate(ProjectileData data)
     {
-        this.data = data; 
+        ApplyData(data);
+        Movement.SetActive(true);
+        Movement.SetDirection(new Vector2(0, -1));
     }
 
-    public virtual void Instantiate(float speed, ColorData color)
+    protected virtual void ApplyData(ProjectileData data)
     {
-        playFieldBoundsY = GameManager.Instance.PlayFieldBounds.max.y;
-        
-        this.speed = speed;
-        ColorData = color;
+        ConfigData = data; 
+        Movement.SetSpeed(data.Speed);
+        ColorData = data.ColorData;
         spriteRenderer.color = ColorData.Color;
-
-        isEnabled = true;
-    }
-
-    protected virtual void Update()
-    {
-        if (!isEnabled)
-            return;
-
-        transform.position = new Vector2(transform.position.x, transform.position.y + speed * Time.deltaTime);
-
-        if (transform.position.y > playFieldBoundsY)
-        {
-            Destroy(gameObject);
-        }
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!isEnabled)
+        if (!Movement.IsActive)
             return;
 
-
-        //IProjectileTarget target = collision.GetComponent<IProjectileTarget>();
-
-        //if (target == null)
-        //    return;
-
-        //if (target.CanInteractWith(this))
-        //{
-        //    target.InteractWith(this);
-        //    OnCollision();
-        //}
-
-        // Replace with event.
-    }
-
-    protected virtual void OnCollision()
-    {
-        HasCollided = true;
-        Destroy(gameObject);
+        ProjectileCollisionEvent?.Invoke(this, collision);
     }
 }

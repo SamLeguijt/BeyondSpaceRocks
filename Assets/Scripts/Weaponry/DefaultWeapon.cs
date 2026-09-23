@@ -33,7 +33,7 @@ public class DefaultWeapon : AbstractWeapon
 
     override protected void InstantiateBullet(Vector2 position, ColorData currentColor = default)
     {
-        Projectile bullet = Object.Instantiate(WeaponData.ProjectilePrefab, position, rotation: Quaternion.identity);
+        BaseProjectile bullet = Object.Instantiate(WeaponData.ProjectilePrefab, position, rotation: Quaternion.identity);
         bullet.Instantiate(WeaponData.ProjectileSpeed, currentColor);
     }
 

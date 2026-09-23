@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class AbstractDestructionResponse : ScriptableObject
 {
-    public abstract void HandleResponse(DestructibleObject destroyed, Projectile by);
+    public abstract void HandleResponse(DestructibleObject destroyed, BaseProjectile by);
 }

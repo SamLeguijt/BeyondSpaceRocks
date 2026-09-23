@@ -68,7 +68,7 @@ public class Obstacle : DestructibleObject, IScoreSource
         maskHitRenderer.color = this.ColorData.Color;
 
         SetColliderEnabled(false);
-        FallBehaviour.SetFallSpeed(Random.Range(ColorData.MinSpeed, ColorData.MaxSpeed));
+        FallBehaviour.SetSpeed(Random.Range(ColorData.MinSpeed, ColorData.MaxSpeed));
         FallBehaviour.SetActive(true);
     }
 

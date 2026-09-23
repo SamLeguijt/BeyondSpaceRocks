@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Weapon_", menuName = "ScriptableObjects/Weaponry/new WeaponData", order = 0)]
 public class WeaponData : ScriptableObject
 {
-    [field: SerializeField] public Projectile ProjectilePrefab { get; protected set; } = null;
+    [field: SerializeField] public BaseProjectile ProjectilePrefab { get; protected set; } = null;
 
     [field: SerializeField] public float ProjectileSpeed { get; protected set; } = 1f;
 

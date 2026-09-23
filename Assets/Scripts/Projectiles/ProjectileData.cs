@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: Access modifiers
-public class ProjectileData : MonoBehaviour
+[CreateAssetMenu(menuName = "ScriptableObjects/Projectiles/new ProjectileData", fileName = "ProjectileData_")]
+public class ProjectileData : ScriptableObject
 {
-    public float speed; 
-    public ColorData colorData; 
-    public EProjectileCollisionResponse collisionResponse; 
-    public EInteractionRule interactionRule;
+    // TODO: Private set + ApplyModifier methods?
+
+    public GameObject Prefab { get; set; }
+    public float Speed { get; set; } 
+    public ColorData ColorData { get; set; } 
+    public EProjectileCollisionResponse CollisionResponse { get; set; } 
+    public EInteractionRule InteractionRule {get; set; }
 }

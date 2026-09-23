@@ -20,7 +20,7 @@ public class MovementBehaviour : MonoBehaviour
         IsActive = value;
     }
 
-    public void SetFallSpeed(float value)
+    public void SetSpeed(float value)
     {
         MoveSpeed = value;
     }

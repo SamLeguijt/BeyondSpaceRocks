@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ScoreIncreaseDestructionResponse : AbstractDestructionResponse
 {
-    public override void HandleResponse(DestructibleObject destroyed, Projectile by)
+    public override void HandleResponse(DestructibleObject destroyed, BaseProjectile by)
     {
     }
 
