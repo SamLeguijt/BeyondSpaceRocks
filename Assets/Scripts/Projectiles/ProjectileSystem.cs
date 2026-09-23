@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class ProjectileSystem 
+public class ProjectileSystem : IProjectileSpawner
 {
     private readonly IEventBus EventBus = null;
     private readonly InteractionResolver InteractionResolver = null;
@@ -18,21 +20,21 @@ public class ProjectileSystem
         InteractionResolver = new InteractionResolver();
         Factory = new ProjectileFactory();
     }
- 
-    public BaseProjectile Spawn(ProjectileData config, Vector2 position)
+
+    public BaseProjectile Spawn(ProjectileData data)
     {
-        BaseProjectile projectile = Factory.Create(config, position);
+        BaseProjectile projectile = Factory.Create(data);
         projectile.ProjectileCollisionEvent += HandleCollision;
         activeProjectiles.Add(projectile);
-
-        return projectile; 
+        projectile.Activate();
+        return projectile;
     }
 
-    private void RemoveProjectile(BaseProjectile projectile)
+    public void Despawn(BaseProjectile projectile)
     {
         activeProjectiles.Remove(projectile);
         projectile.ProjectileCollisionEvent -= HandleCollision;
-        Factory.Return(projectile); 
+        Factory.Return(projectile);
     }
 
     public void HandleCollision(BaseProjectile projectile, Collider2D collision)
@@ -63,12 +65,12 @@ public class ProjectileSystem
     private void HandleProjectileCollisionResponse(BaseProjectile projectile)
     {
         /// Uses the response to decide what happens to the projectile
-        switch (projectile.ConfigData.CollisionResponse)
+        switch (projectile.Data.CollisionResponse)
         {
             case EProjectileCollisionResponse.Ignore:
                 break;
             case EProjectileCollisionResponse.DestroyOnImpact:
-                RemoveProjectile(projectile);
+                Despawn(projectile);
             break; 
         }   
     }
@@ -94,6 +96,8 @@ public class ProjectileSystem
     private void HandleOutOfBounds(BaseProjectile projectile)
     {
         EventBus.Publish(new ProjectileExitBoundsEvent(projectile, projectile.transform.position));
-        RemoveProjectile(projectile);
+        Despawn(projectile);
     }
+
+
 }

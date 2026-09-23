@@ -3,27 +3,28 @@ using UnityEngine;
 
 public class BaseProjectile : MonoBehaviour
 {
-    public ProjectileData ConfigData { get; private set; }
-    public ColorData ColorData { get; protected set; }
+    public ProjectileData Data { get; private set; }
     public Action<BaseProjectile, Collider2D> ProjectileCollisionEvent; 
 
     [Header("Component References")]
     [SerializeField] protected SpriteRenderer spriteRenderer = null;
     [SerializeField] protected MovementBehaviour Movement = null;
 
-    public  void Instantiate(ProjectileData data)
+    public virtual void Configure(ProjectileData data)
     {
-        Configure(data);
-        Movement.SetActive(true);
-        Movement.SetDirection(new Vector2(0, -1));
+        Data = data; 
+        Movement.SetSpeed(data.MoveSpeed);
+        spriteRenderer.color = Data.ColorData.Color;
     }
 
-    protected virtual void Configure(ProjectileData data)
+    public virtual void Activate()
     {
-        ConfigData = data; 
-        Movement.SetSpeed(data.Speed);
-        ColorData = data.ColorData;
-        spriteRenderer.color = ColorData.Color;
+        if (Data == null)
+            return;
+
+        Movement.SetSpeed(Data.MoveSpeed);
+        Movement.SetDirection(Data.MoveDirection);
+        Movement.SetActive(true);
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)

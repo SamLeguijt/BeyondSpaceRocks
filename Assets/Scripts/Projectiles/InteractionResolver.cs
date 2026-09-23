@@ -29,10 +29,10 @@ public class InteractionResolver
     {
         bool shouldInteract = false;
 
-        switch (projectile.ConfigData.InteractionRule)
+        switch (projectile.Data.InteractionRule)
         {
             case EInteractionRule.MatchColor:
-                if (projectile.ColorData.ColorType == target.ColorData.ColorType)
+                if (projectile.Data.ColorData.ColorType == target.ColorData.ColorType)
                     shouldInteract = true;
             break;
             case EInteractionRule.IgnoreColor:

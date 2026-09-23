@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-// TODO: Objectpooling, prefab through constructor?
+// TODO: Objectpooling
 public class ProjectileFactory 
 {
-    public BaseProjectile Create(ProjectileData data, Vector2 position)
+    public BaseProjectile Create(ProjectileData data)
     {
-        BaseProjectile projectile = GameObject.Instantiate(data.Prefab, position, quaternion.identity).GetComponent<BaseProjectile>();
-        projectile.Instantiate(data);
+        BaseProjectile projectile = GameObject.Instantiate(data.Prefab, data.SpawnPosition, Quaternion.Euler(data.MoveDirection)).GetComponent<BaseProjectile>();
 
+        if (projectile == null)
+            throw new System.Exception();
+
+        projectile.Configure(data);
         return projectile;
     }
 
