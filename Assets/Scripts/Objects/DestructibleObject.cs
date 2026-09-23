@@ -7,6 +7,9 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
 {
     [field: SerializeField] public HitPointComponent HP { get; private set; } 
     [field: SerializeField] public BoxCollider2D Collider { get; protected set; }
+
+    public abstract ColorData ColorData { get; protected set; }
+
     public delegate void DestructionEventHandler(DestructibleObject destroyed, IProjectile by); 
     public static event DestructionEventHandler ObjectDestroyEvent;
 
@@ -54,5 +57,10 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
     {
         // TODO: Pooling.
         Destroy(gameObject, 1f);
+    }
+
+    public void OnProjectileHit(BaseProjectile projectile)
+    {
+        throw new System.NotImplementedException();
     }
 }

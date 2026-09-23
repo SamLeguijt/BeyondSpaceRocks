@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ProjectileMissEvent : IEvent
 {
-    public readonly IProjectile Projectile;
+    public readonly BaseProjectile Projectile;
 
-    public ProjectileMissEvent(IProjectile projectile)
+    public ProjectileMissEvent(BaseProjectile projectile)
     {
         Projectile = projectile;
     }

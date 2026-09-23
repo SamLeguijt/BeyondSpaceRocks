@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Rock : DestructibleObject
 {
+    public override ColorData ColorData {get; protected set;}
+
     protected override void HandleDestruction()
     {
         

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class BaseProjectile : MonoBehaviour, IProjectile
+public class BaseProjectile : MonoBehaviour
 {
     public ProjectileData ConfigData { get; private set; }
     public ColorData ColorData { get; protected set; }
@@ -11,18 +11,14 @@ public class BaseProjectile : MonoBehaviour, IProjectile
     [SerializeField] protected SpriteRenderer spriteRenderer = null;
     [SerializeField] protected MovementBehaviour Movement = null;
 
-    public Vector3 Position => transform.position;
-    public EInteractionRule InteractionRule => ConfigData.InteractionRule;
-    public EProjectileCollisionResponse CollisionResponse => ConfigData.CollisionResponse;
-
     public  void Instantiate(ProjectileData data)
     {
-        ApplyData(data);
+        Configure(data);
         Movement.SetActive(true);
         Movement.SetDirection(new Vector2(0, -1));
     }
 
-    protected virtual void ApplyData(ProjectileData data)
+    protected virtual void Configure(ProjectileData data)
     {
         ConfigData = data; 
         Movement.SetSpeed(data.Speed);

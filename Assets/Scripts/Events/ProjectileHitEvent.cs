@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class ProjectileHitEvent : IEvent
 {
-    public readonly IProjectile Projectile;
+    public readonly BaseProjectile Projectile;
     public readonly IProjectileTarget Target;
 
-    public ProjectileHitEvent(IProjectile projectile, IProjectileTarget hit)
+    public ProjectileHitEvent(BaseProjectile projectile, IProjectileTarget hit)
     {
         Projectile = projectile;
         Target = hit; 

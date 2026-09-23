@@ -25,16 +25,18 @@ public class DefaultWeapon : AbstractWeapon
         if (!CanFire())
             return;
 
-        InstantiateBullet(position, currentColor);
+        GetBullet(position, currentColor);
         CurrentAmmo--;
         AudioManager.Instance?.PlayShootSFX();
         OnFire?.Invoke();
     }
 
-    override protected void InstantiateBullet(Vector2 position, ColorData currentColor = default)
+    override protected void GetBullet(Vector2 position, ColorData currentColor = default)
     {
-        BaseProjectile bullet = Object.Instantiate(WeaponData.ProjectilePrefab, position, rotation: Quaternion.identity);
-        bullet.Instantiate(WeaponData.ProjectileSpeed, currentColor);
+        // BaseProjectile bullet = Object.Instantiate(WeaponData.ProjectilePrefab, position, rotation: Quaternion.identity);
+        // bullet.Instantiate(WeaponData.ProjectileSpeed, currentColor);
+
+        // TODO: U/se prpjectile system
     }
 
     override public void RefillAmmo()

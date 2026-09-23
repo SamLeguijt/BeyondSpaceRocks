@@ -5,10 +5,9 @@ using UnityEngine;
 public class ProjectileSystem 
 {
     private readonly IEventBus EventBus = null;
-    private readonly CollisionResolver CollisionResolver = null;
+    private readonly InteractionResolver InteractionResolver = null;
     private readonly ProjectileFactory Factory = null;
-
-    private List<IProjectile> activeProjectiles = new();
+    private List<BaseProjectile> activeProjectiles = new();
 
     public ProjectileSystem(IEventBus eventBus)
     {
@@ -16,25 +15,27 @@ public class ProjectileSystem
             throw new System.Exception();
 
         EventBus = eventBus;  
-        CollisionResolver = new CollisionResolver();
+        InteractionResolver = new InteractionResolver();
         Factory = new ProjectileFactory();
     }
  
-    public IProjectile GetProjectile(ProjectileData config)
+    public BaseProjectile Spawn(ProjectileData config, Vector2 position)
     {
-        IProjectile projectile = Factory.Create(config);
+        BaseProjectile projectile = Factory.Create(config, position);
+        projectile.ProjectileCollisionEvent += HandleCollision;
         activeProjectiles.Add(projectile);
 
         return projectile; 
     }
 
-    private void RemoveProjectile(IProjectile projectile)
+    private void RemoveProjectile(BaseProjectile projectile)
     {
-        Factory.Return(projectile); 
         activeProjectiles.Remove(projectile);
+        projectile.ProjectileCollisionEvent -= HandleCollision;
+        Factory.Return(projectile); 
     }
 
-    public void HandleCollision(IProjectile projectile, Collision collision)
+    public void HandleCollision(BaseProjectile projectile, Collider2D collision)
     {
         IProjectileTarget target = collision.gameObject.GetComponent<IProjectileTarget>();
 
@@ -43,33 +44,31 @@ public class ProjectileSystem
             return;
 
         // Resolves runtime game rules to decide if an interaction should occur
-        CollisionResult result = CollisionResolver.Resolve(projectile, target);
+        InteractionResult result = InteractionResolver.Resolve(projectile, target);
 
         // No interaction counts as a miss; projectile hit a target, but no interaction 
         if (!result.ShouldInteract)
         {
-            // Fire event (miss)
+            EventBus.Publish(new ProjectileMissEvent(projectile));
             return; 
         }
 
         // Otherwise, projectiles hit a valid target: 
 
         target.OnProjectileHit(projectile);
-        HandleProjectileCollisionResponse(projectile, projectile.CollisionResponse);
+        EventBus.Publish<ProjectileHitEvent>(new ProjectileHitEvent(projectile, target));
+        HandleProjectileCollisionResponse(projectile);
     }
 
-    private void HandleProjectileCollisionResponse(IProjectile projectile, EProjectileCollisionResponse response)
+    private void HandleProjectileCollisionResponse(BaseProjectile projectile)
     {
         /// Uses the response to decide what happens to the projectile
-        switch (response)
+        switch (projectile.ConfigData.CollisionResponse)
         {
+            case EProjectileCollisionResponse.Ignore:
+                break;
             case EProjectileCollisionResponse.DestroyOnImpact:
                 RemoveProjectile(projectile);
-                // fire event (hit)
-            break; 
-            case EProjectileCollisionResponse.Ignore:
-            // do nothing
-            // fire event (hit)
             break; 
         }   
     }
@@ -79,21 +78,22 @@ public class ProjectileSystem
     {
         for (int i = activeProjectiles.Count - 1; i >= 0; i--)
         {
-            IProjectile projectile = activeProjectiles[i];
+            BaseProjectile projectile = activeProjectiles[i];
 
             if (OutOfBounds(projectile))
                 HandleOutOfBounds(projectile);
         }
     }
-    private bool OutOfBounds(IProjectile projectile)
+
+    private bool OutOfBounds(BaseProjectile projectile)
     {
         // TODO: Implementation
         return false;
     }
 
-    private void HandleOutOfBounds(IProjectile projectile)
+    private void HandleOutOfBounds(BaseProjectile projectile)
     {
-        EventBus.Publish(new ProjectileExitBoundsEvent(projectile, projectile.Position));
+        EventBus.Publish(new ProjectileExitBoundsEvent(projectile, projectile.transform.position));
         RemoveProjectile(projectile);
     }
 }

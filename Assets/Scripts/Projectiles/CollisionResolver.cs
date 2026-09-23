@@ -9,13 +9,13 @@ public enum EProjectileCollisionResponse
     // Bounce etc?
 }
 
-public struct CollisionResult
+public struct InteractionResult
 {
-    public IProjectile Projectile {get;}
+    public BaseProjectile Projectile {get;}
     public IProjectileTarget Target {get;}
     public bool ShouldInteract { get;}
 
-    public CollisionResult(IProjectile projectile, IProjectileTarget target, bool interact) 
+    public InteractionResult(BaseProjectile projectile, IProjectileTarget target, bool interact) 
     {
         Projectile = projectile;
         Target = target; 
@@ -23,13 +23,13 @@ public struct CollisionResult
     }
 }
 
-public class CollisionResolver 
+public class InteractionResolver 
 {
-    public CollisionResult Resolve(IProjectile projectile, IProjectileTarget target)
+    public InteractionResult Resolve(BaseProjectile projectile, IProjectileTarget target)
     {
         bool shouldInteract = false;
 
-        switch (projectile.InteractionRule)
+        switch (projectile.ConfigData.InteractionRule)
         {
             case EInteractionRule.MatchColor:
                 if (projectile.ColorData.ColorType == target.ColorData.ColorType)
@@ -41,6 +41,6 @@ public class CollisionResolver
             break; 
         }
 
-        return new CollisionResult(projectile, target, shouldInteract);
+        return new InteractionResult(projectile, target, shouldInteract);
     }
 }

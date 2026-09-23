@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ProjectileExitBoundsEvent : IEvent
 {
-    public readonly IProjectile Projectile;
+    public readonly BaseProjectile Projectile;
     public readonly Vector3 ExitPosition; 
-    public ProjectileExitBoundsEvent(IProjectile projectile, Vector3 exitPosition)
+    public ProjectileExitBoundsEvent(BaseProjectile projectile, Vector3 exitPosition)
     {
         Projectile = projectile;
         ExitPosition = exitPosition;

@@ -19,7 +19,7 @@ public abstract class AbstractWeapon
     
     public abstract void Fire(Vector2 position, ColorData currentColor);
 
-    protected abstract void InstantiateBullet(Vector2 position, ColorData currentColor = default); 
+    protected abstract void GetBullet(Vector2 position, ColorData currentColor = default); 
 
     public abstract void RefillAmmo(); 
 }

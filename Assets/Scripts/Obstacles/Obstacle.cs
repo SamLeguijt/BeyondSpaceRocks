@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 public class Obstacle : DestructibleObject, IScoreSource
 {
     public static Action<Obstacle> ObstacleEscapedEvent; 
-    public ColorData ColorData { get; protected set; }
+    public override ColorData ColorData { get; protected set; }
     public float ScoreValue => ColorData.Score;
 
     [SerializeField] private Sprite[] obstacleSprites = null;
