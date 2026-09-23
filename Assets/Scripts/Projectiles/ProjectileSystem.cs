@@ -5,6 +5,7 @@ using UnityEngine;
 public class ProjectileSystem 
 {
     private readonly IEventBus EventBus = null;
+    private readonly CollisionResolver CollisionResolver = null;
 
     public ProjectileSystem(IEventBus eventBus)
     {
@@ -12,6 +13,7 @@ public class ProjectileSystem
             throw new System.Exception();
 
         EventBus = eventBus;  
+        CollisionResolver = new CollisionResolver();
     }
 
  
@@ -22,17 +24,42 @@ public class ProjectileSystem
         if (target == null)  
             return;
 
-        if (target.CanInteractWith(projectile))
-        {
-            target.InteractWith(projectile);
+        CollisionResult result = CollisionResolver.Resolve(projectile, target);
 
-            EventBus.Publish<ProjectileHitEvent>(new ProjectileHitEvent(projectile, target));
-            //OnCollision();
-        }
-        else
+        if (!result.ShouldInteract)
         {
-            EventBus.Publish(new ProjectileMissEvent(projectile));
+            // Fire event (miss)
+            return; 
         }
+
+        HandleProjectileCollisionResponse(projectile, projectile.CollisionResponse);
+
+        // if (target.CanInteractWith(projectile))
+        // {
+        //     target.InteractWith(projectile);
+
+        //     EventBus.Publish<ProjectileHitEvent>(new ProjectileHitEvent(projectile, target));
+        //     //OnCollision();
+        // }
+        // else
+        // {
+        //     EventBus.Publish(new ProjectileMissEvent(projectile));
+        // }
+    }
+
+    private void HandleProjectileCollisionResponse(IProjectile projectile, EProjectileCollisionResponse response)
+    {
+        switch (response)
+        {
+            case EProjectileCollisionResponse.DestroyOnImpact:
+            // return to pool 
+            // fire event (hit)
+            break; 
+            case EProjectileCollisionResponse.Ignore:
+            // do nothing
+            // fire event (hit)
+            break; 
+        }   
     }
 
     private void CheckBounds(IProjectile projectile)

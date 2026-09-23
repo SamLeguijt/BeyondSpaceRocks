@@ -6,4 +6,6 @@ public interface IProjectileTarget
 {
     public void InteractWith(IProjectile projectile);
     public bool CanInteractWith(IProjectile projectile);
+
+    ColorData ColorData {get;}
 }
