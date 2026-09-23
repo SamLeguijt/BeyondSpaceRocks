@@ -16,6 +16,15 @@ public class Projectile : MonoBehaviour, IProjectile
 
     public Vector3 Position => transform.position;
 
+    public EInteractionRule InteractionRule => data.interactionRule;
+    public EProjectileCollisionResponse CollisionResponse => data.collisionResponse;
+    ProjectileData data;
+
+    public virtual void Instantiate(ProjectileData data)
+    {
+        this.data = data; 
+    }
+
     public virtual void Instantiate(float speed, ColorData color)
     {
         playFieldBoundsY = GameManager.Instance.PlayFieldBounds.max.y;
