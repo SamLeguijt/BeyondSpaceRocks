@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class DefaultWeapon : AbstractWeapon
 {
-    public DefaultWeapon(WeaponData weaponData) : base(weaponData)
+    public DefaultWeapon(WeaponData weaponData, IProjectileSpawner spawner) : base(weaponData, spawner)
     {
-        WeaponData = weaponData; 
         CurrentAmmo = weaponData.MaxAmmo;
     }
 
@@ -25,18 +24,27 @@ public class DefaultWeapon : AbstractWeapon
         if (!CanFire())
             return;
 
-        GetBullet(position, currentColor);
+        CreateBullet(position, currentColor);
         CurrentAmmo--;
         AudioManager.Instance?.PlayShootSFX();
         OnFire?.Invoke();
     }
 
-    override protected void GetBullet(Vector2 position, ColorData currentColor = default)
+    private ProjectileData GetModifiedProjectileData()
+    {
+        ProjectileData data = WeaponData.ProjectileConfig.CreateRuntimeData();
+        //data.ApplyModifiers(); TODO: Use a ColorModifier to set the color to weapon color
+        return data;
+    }
+
+    override protected void CreateBullet(Vector2 position, ColorData currentColor = default)
     {
         // BaseProjectile bullet = Object.Instantiate(WeaponData.ProjectilePrefab, position, rotation: Quaternion.identity);
         // bullet.Instantiate(WeaponData.ProjectileSpeed, currentColor);
 
         // TODO: U/se prpjectile system
+        ProjectileData data = GetModifiedProjectileData();
+        BaseProjectile bullet = ProjectileSpawner.Spawn(data);
     }
 
     override public void RefillAmmo()

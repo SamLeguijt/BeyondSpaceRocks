@@ -6,6 +6,7 @@ public class GameSystems
 {
     public ProjectileSystem ProjectileSystem { get; }
     public EventBus EventBus { get; }
+    public WeaponFactory WeaponFactory { get; }
 
     // Todo:
     // ComboSystem
@@ -14,13 +15,15 @@ public class GameSystems
 
     public GameSystems(
         ProjectileSystem projectileSystem,
-        EventBus eventBus)
+        EventBus eventBus,
+        WeaponFactory factory)
     {
         if (projectileSystem == null || eventBus == null)
             throw new System.Exception(); 
 
         ProjectileSystem = projectileSystem;
         EventBus = eventBus;
+        WeaponFactory = factory;
     }
 }
 
@@ -32,7 +35,8 @@ public class GameSystemsFactory
    {
         EventBus eventBus = new EventBus();
         ProjectileSystem projectileSystem = new ProjectileSystem(eventBus);
-
-        return new GameSystems(projectileSystem, eventBus);
+        WeaponFactory weaponFactory = new WeaponFactory(projectileSystem);
+        
+        return new GameSystems(projectileSystem, eventBus, weaponFactory);
    }
 }

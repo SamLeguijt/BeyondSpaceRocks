@@ -6,7 +6,7 @@ using UnityEngine;
 public class WeaponData : ScriptableObject
 {
     [field: SerializeField] public BaseProjectile ProjectilePrefab { get; protected set; } = null;
-
+    [field: SerializeField] public ProjectileConfig ProjectileConfig { get; protected set; } = null; 
     [field: SerializeField] public float ProjectileSpeed { get; protected set; } = 1f;
 
     [field: SerializeField] public int MaxAmmo { get; protected set; } = 1;

@@ -33,8 +33,9 @@ public class PlayerWeaponController : MonoBehaviour
 
     private void Start()
     {
-        if (CurrentWeapon == null)
-            EquipWeapon(new DefaultWeapon(defaultWeaponData));
+        // Done via GameManager flow
+        //if (CurrentWeapon == null)
+            //EquipWeapon(new DefaultWeapon(defaultWeaponData));
     }
 
     void OnEnable()
@@ -55,7 +56,7 @@ public class PlayerWeaponController : MonoBehaviour
     private void SetCurrentWeapon(AbstractWeapon weapon)
     {
         if (weapon == null)
-            weapon = new DefaultWeapon(defaultWeaponData);
+            return;
 
         CurrentWeapon = weapon;
     }
