@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
     [field: Header("References")]
     [field: SerializeField] public PlayerHealthController PlayerHealth { get; private set; }
     [field: SerializeField] public PlayerWeaponController PlayerWeaponController{ get; private set; }
-    [field: SerializeField] public WeaponData defaultWeapon { get; private set; }
     [field: SerializeField] public ObstacleSpawner ObstacleSpawner { get; private set; }
     [field: SerializeField] public LaneManager LaneManager { get; private set; }
     [field: SerializeField] public Camera MainCamera { get; private set; }
@@ -90,8 +89,7 @@ public class GameManager : MonoBehaviour
         if (gameSystems == null)
             gameSystems = GameSystemsFactory.Create(PlayFieldBounds);
 
-        AbstractWeapon playerWeapon = gameSystems.WeaponFactory.Create(defaultWeapon);
-        PlayerWeaponController.EquipWeapon(playerWeapon);
+        PlayerWeaponController.InjectDependencies(gameSystems.WeaponFactory);
     }
 
     private void Start()

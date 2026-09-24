@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class WeaponFactory 
 {
-    private IProjectileSpawner projectileSpawner; 
+    private IProjectileSpawner projectileSpawner;
     
     public WeaponFactory(IProjectileSpawner projectileSpawner)
     {
         this.projectileSpawner = projectileSpawner;
     }
 
-    public AbstractWeapon Create(WeaponData data)
+    public AbstractWeapon Create(WeaponData data, Transform firepoint)
     {
-        return new DefaultWeapon(data, projectileSpawner);
+        return new DefaultWeapon(data, projectileSpawner, firepoint);
     }
 }

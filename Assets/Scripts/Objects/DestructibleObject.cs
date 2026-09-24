@@ -10,7 +10,7 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
 
     public abstract ColorData ColorData { get; protected set; }
 
-    public delegate void DestructionEventHandler(DestructibleObject destroyed, IProjectile by); 
+    public delegate void DestructionEventHandler(DestructibleObject destroyed); 
     public static event DestructionEventHandler ObjectDestroyEvent;
 
     void Awake()
@@ -30,24 +30,24 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
 
     public void InteractWith(IProjectile projectile) 
     {
-        ReceiveHit(projectile);
+        ReceiveHit();
     }
 
-    protected virtual void ReceiveHit(IProjectile projectile)
+    protected virtual void ReceiveHit()
     {
         HP.TakeHitPoints(1);
 
         if (!HP.IsAlive)
         {
-            DestructObject(projectile);
+            DestructObject();
         }
     }
 
-    protected void DestructObject(IProjectile destroyedBy = null)
+    protected void DestructObject()
     {
         SetColliderEnabled(false);
         HandleDestruction();
-        ObjectDestroyEvent?.Invoke(this, destroyedBy);
+        ObjectDestroyEvent?.Invoke(this);
         DisableObjectInternally();
     }
 
@@ -61,6 +61,6 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
 
     public void OnProjectileHit(BaseProjectile projectile)
     {
-        throw new System.NotImplementedException();
+        ReceiveHit();
     }
 }

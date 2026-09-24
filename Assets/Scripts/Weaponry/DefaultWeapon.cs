@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DefaultWeapon : AbstractWeapon
 {
-    public DefaultWeapon(WeaponData weaponData, IProjectileSpawner spawner) : base(weaponData, spawner)
+    public DefaultWeapon(WeaponData weaponData, IProjectileSpawner spawner, Transform firepoint) : base(weaponData, spawner, firepoint)
     {
         CurrentAmmo = weaponData.MaxAmmo;
     }
@@ -19,23 +19,24 @@ public class DefaultWeapon : AbstractWeapon
         return CurrentAmmo > 0; 
     }
 
-    public override void Fire(Vector2 position, ColorData currentColor)
+    public override void Fire(ColorData currentColor)
     {
         if (!CanFire())
             return;
 
-        ProjectileData projectileData = GetModifiedProjectileData(position, currentColor);
+        ProjectileData projectileData = GetModifiedProjectileData(currentColor);
         CreateBullet(projectileData);
+
         CurrentAmmo--;
         AudioManager.Instance?.PlayShootSFX();
         OnFire?.Invoke();
     }
 
-    private ProjectileData GetModifiedProjectileData(Vector2 firePosition, ColorData currentColor)
+    private ProjectileData GetModifiedProjectileData(ColorData currentColor)
     {
         ProjectileData data = WeaponData.ProjectileConfig.CreateRuntimeData();
 
-        data.SpawnPosition = firePosition;
+        data.SpawnPosition = Firepoint.position;
         data.MoveDirection = new Vector2(0, 1);
         data.ColorData = currentColor;
 

@@ -26,6 +26,16 @@ public class PlayerWeaponController : MonoBehaviour
     public Action<AbstractWeapon> weaponReloadFinishedEvent; 
     public Action<AbstractWeapon> equipWeaponEvent;
 
+    private WeaponFactory weaponFactory; 
+
+    public void InjectDependencies(WeaponFactory factory)
+    {
+        if (factory == null)
+            throw new System.Exception();
+
+        weaponFactory = factory;
+    }
+
     void Awake()
     {
         cooldownTimer = new Timer(isPersistant: true);
@@ -33,9 +43,11 @@ public class PlayerWeaponController : MonoBehaviour
 
     private void Start()
     {
-        // Done via GameManager flow
-        //if (CurrentWeapon == null)
-            //EquipWeapon(new DefaultWeapon(defaultWeaponData));
+        if (weaponFactory == null)
+            throw new System.Exception();
+
+        AbstractWeapon defaultWeapon = weaponFactory.Create(defaultWeaponData, firePoint);
+        EquipWeapon(defaultWeapon);
     }
 
     void OnEnable()
@@ -94,7 +106,7 @@ public class PlayerWeaponController : MonoBehaviour
     private void FireCurrentWeapon()
     {
         weaponAnimator.Play(animatorShootClipName);
-        CurrentWeapon?.Fire(firePoint.position, CurrentColor);
+        CurrentWeapon?.Fire(CurrentColor);
         weaponFireEvent?.Invoke(CurrentWeapon);
         cooldownTimer.StartTimer(CurrentWeapon.WeaponData.CooldownSeconds);
     }
