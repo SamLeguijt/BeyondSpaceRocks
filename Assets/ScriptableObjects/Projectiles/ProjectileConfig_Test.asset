@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43f255987017daa48ba81e97b1511c5f, type: 3}
   m_Name: ProjectileConfig_Test
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
-  speed: 0
+  prefab: {fileID: 8190109031750626432, guid: 2267dcdef5954a54c86fd61508e4cad4, type: 3}
+  speed: 5
   colorData:
-    Color: {r: 0, g: 0, b: 0, a: 0}
-    ColorType: 0
+    Color: {r: 0.8773585, g: 0.11173906, b: 0.11173906, a: 0}
+    ColorType: 2
     MinSpeed: 0
     MaxSpeed: 0
     Score: 0

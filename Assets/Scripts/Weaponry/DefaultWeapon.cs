@@ -30,20 +30,25 @@ public class DefaultWeapon : AbstractWeapon
         OnFire?.Invoke();
     }
 
-    private ProjectileData GetModifiedProjectileData()
+    private ProjectileData GetModifiedProjectileData(Vector2 firePosition, ColorData currentColor)
     {
         ProjectileData data = WeaponData.ProjectileConfig.CreateRuntimeData();
+        data.SpawnPosition = firePosition;
+        data.MoveDirection = new Vector2(0, 1);
+        data.ColorData = currentColor;
+
         //data.ApplyModifiers(); TODO: Use a ColorModifier to set the color to weapon color
         return data;
     }
 
-    override protected void CreateBullet(Vector2 position, ColorData currentColor = default)
+    override protected void CreateBullet(Vector2 position, ColorData currentColor)
     {
         // BaseProjectile bullet = Object.Instantiate(WeaponData.ProjectilePrefab, position, rotation: Quaternion.identity);
         // bullet.Instantiate(WeaponData.ProjectileSpeed, currentColor);
 
         // TODO: U/se prpjectile system
-        ProjectileData data = GetModifiedProjectileData();
+        ProjectileData data = GetModifiedProjectileData(position, currentColor);
+
         BaseProjectile bullet = ProjectileSpawner.Spawn(data);
     }
 

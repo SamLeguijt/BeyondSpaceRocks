@@ -109,7 +109,6 @@ public class AmmoUI : MonoBehaviour
     {
         float roundDelay = maxDuration / roundsAmount;
         WaitForSeconds roundInterval = new WaitForSeconds(maxDuration / roundsAmount);
-        Debug.Log("Default fade start, duration: " + maxDuration);
 
         int startIndex = roundsUI.IndexOf(roundsUI[roundsUI.Count - roundsAmount]);
         
@@ -130,7 +129,6 @@ public class AmmoUI : MonoBehaviour
 
     private IEnumerator RefillAmmoRoundsRoutine(int roundsAmount, float maxDuration)
     {
-        Debug.Log("Refill start, duration: " + maxDuration);
         WaitForSeconds roundInterval = new WaitForSeconds(maxDuration / roundsAmount);
 
         int startIndex = roundsUI.IndexOf(roundsUI[roundsUI.Count - roundsAmount]);
