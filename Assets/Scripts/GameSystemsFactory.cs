@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameSystems
+public class GameSystems : IUpdatable
 {
     public ProjectileSystem ProjectileSystem { get; }
     public EventBus EventBus { get; }
@@ -12,6 +12,8 @@ public class GameSystems
     // ComboSystem
     // ScoreSystem ?
     // Player ?
+
+    private readonly IUpdatable[] updatables;
 
     public GameSystems(
         ProjectileSystem projectileSystem,
@@ -24,6 +26,17 @@ public class GameSystems
         ProjectileSystem = projectileSystem;
         EventBus = eventBus;
         WeaponFactory = factory;
+
+        updatables = new IUpdatable[]
+        {
+            ProjectileSystem
+        };
+    }
+
+    public void Update(float deltaTime)
+    {
+        foreach (var system in updatables)
+            system.Update(deltaTime);
     }
 }
 
@@ -31,10 +44,10 @@ public class GameSystemsFactory
 {
    private GameSystemsFactory() { }
 
-   public static GameSystems Create()
+   public static GameSystems Create(Bounds playfield)
    {
         EventBus eventBus = new EventBus();
-        ProjectileSystem projectileSystem = new ProjectileSystem(eventBus);
+        ProjectileSystem projectileSystem = new ProjectileSystem(eventBus, playfield);
         WeaponFactory weaponFactory = new WeaponFactory(projectileSystem);
         
         return new GameSystems(projectileSystem, eventBus, weaponFactory);

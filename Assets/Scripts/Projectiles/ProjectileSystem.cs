@@ -1,17 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class ProjectileSystem : IProjectileSpawner
+public class ProjectileSystem : IProjectileSpawner, IUpdatable
 {
     private readonly IEventBus EventBus = null;
     private readonly InteractionResolver InteractionResolver = null;
     private readonly ProjectileFactory Factory = null;
     private List<BaseProjectile> activeProjectiles = new();
+    private readonly Bounds PlayfieldBounds;
 
-    public ProjectileSystem(IEventBus eventBus)
+    public ProjectileSystem(IEventBus eventBus, Bounds playfield)
     {
         if (eventBus == null)
             throw new System.Exception();
@@ -19,6 +21,7 @@ public class ProjectileSystem : IProjectileSpawner
         EventBus = eventBus;  
         InteractionResolver = new InteractionResolver();
         Factory = new ProjectileFactory();
+        PlayfieldBounds = playfield;
     }
 
     public BaseProjectile Spawn(ProjectileData data)
@@ -32,8 +35,8 @@ public class ProjectileSystem : IProjectileSpawner
 
     public void Despawn(BaseProjectile projectile)
     {
-        activeProjectiles.Remove(projectile);
         projectile.ProjectileCollisionEvent -= HandleCollision;
+        activeProjectiles.Remove(projectile);
         Factory.Return(projectile);
     }
 
@@ -75,22 +78,31 @@ public class ProjectileSystem : IProjectileSpawner
         }   
     }
 
-    // TODO: Call in update
+
+    public void Update(float deltaTime)
+    {
+        CheckProjectileBounds();
+    }
+
     private void CheckProjectileBounds()
     {
         for (int i = activeProjectiles.Count - 1; i >= 0; i--)
         {
             BaseProjectile projectile = activeProjectiles[i];
 
-            if (OutOfBounds(projectile))
+            if (!IsInPlayfield(projectile))
                 HandleOutOfBounds(projectile);
         }
     }
 
-    private bool OutOfBounds(BaseProjectile projectile)
+    private bool IsInPlayfield(BaseProjectile projectile)
     {
-        // TODO: Implementation
-        return false;
+        Vector2 position = projectile.transform.position;
+
+        return position.x >= PlayfieldBounds.min.x &&
+               position.x <= PlayfieldBounds.max.x &&
+               position.y >= PlayfieldBounds.min.y &&
+               position.y <= PlayfieldBounds.max.y;
     }
 
     private void HandleOutOfBounds(BaseProjectile projectile)
@@ -98,6 +110,4 @@ public class ProjectileSystem : IProjectileSpawner
         EventBus.Publish(new ProjectileExitBoundsEvent(projectile, projectile.transform.position));
         Despawn(projectile);
     }
-
-
 }

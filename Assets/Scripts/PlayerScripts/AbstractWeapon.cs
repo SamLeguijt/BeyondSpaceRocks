@@ -21,7 +21,7 @@ public abstract class AbstractWeapon
     
     public abstract void Fire(Vector2 position, ColorData currentColor);
 
-    protected abstract void CreateBullet(Vector2 position, ColorData currentColor = default); 
+    protected abstract void CreateBullet(ProjectileData data); 
 
     public abstract void RefillAmmo(); 
 }

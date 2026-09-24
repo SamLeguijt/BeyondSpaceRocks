@@ -19,6 +19,7 @@ public class ProjectileFactory
 
     public void Return(BaseProjectile projectile)
     {
+        GameObject.Destroy(projectile.gameObject);
         // Pooling
     }
 }

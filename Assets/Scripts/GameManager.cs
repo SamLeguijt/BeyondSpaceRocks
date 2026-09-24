@@ -85,8 +85,10 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = false;
 
+        PlayFieldBounds = GetPlayFieldBounds();
+
         if (gameSystems == null)
-            gameSystems = GameSystemsFactory.Create();
+            gameSystems = GameSystemsFactory.Create(PlayFieldBounds);
 
         AbstractWeapon playerWeapon = gameSystems.WeaponFactory.Create(defaultWeapon);
         PlayerWeaponController.EquipWeapon(playerWeapon);
@@ -98,6 +100,12 @@ public class GameManager : MonoBehaviour
             MainCamera = Camera.main;
 
         AudioManager.Instance?.PlayGameMusic();
+    }
+
+    private void Update()
+    {
+        if (gameSystems != null)
+            gameSystems.Update(Time.deltaTime);
     }
 
     private void OnPlayerDeathEvent()
@@ -162,16 +170,17 @@ public class GameManager : MonoBehaviour
         decreasedSpeedRoutine = null;
     }
 
-    // public Bounds GetPlayFieldBounds()
-    // {
-    // }
-    public Vector2 GetScreenBounds()
+    public Bounds GetPlayFieldBounds()
     {
-        Vector2 screenBottomLeft = MainCamera.ViewportToWorldPoint(new Vector2(0, 0));
-        Vector2 screenTopRight = MainCamera.ViewportToWorldPoint(new Vector2(1, 1));
+        Vector3 bottomLeft = MainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0));
+        Vector3 topRight = MainCamera.ViewportToWorldPoint(new Vector3(1, 1, 0));
 
-        return new Vector2(screenTopRight.x, screenTopRight.y);
+        Vector3 center = (bottomLeft + topRight) / 2f;
+        Vector3 size = topRight - bottomLeft;
+
+        return new Bounds(center, size);
     }
+
     #region GameStates
 
     public void StartGame()
