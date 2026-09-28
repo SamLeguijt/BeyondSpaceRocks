@@ -93,6 +93,7 @@ public class ProjectileSystem : IProjectileSpawner, IUpdatable
         }
     }
 
+    /// TODO: Make static utils method? 
     private bool IsInPlayfield(BaseProjectile projectile)
     {
         Vector2 position = projectile.transform.position;

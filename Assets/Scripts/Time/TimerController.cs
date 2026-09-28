@@ -32,7 +32,7 @@ public class TimerController : MonoBehaviour
 
         if (timersAmount > 0)
         {
-            for (int i = 0; i < timersAmount; i++)
+            for (int i = timersAmount -1; i >= 0; i--)
             {
                 timers[i].Tick(Time.deltaTime);
             }
