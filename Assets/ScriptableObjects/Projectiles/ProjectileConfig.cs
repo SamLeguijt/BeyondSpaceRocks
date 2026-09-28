@@ -8,14 +8,9 @@ public class ProjectileConfig : ScriptableObject
     [SerializeField] private ColorData colorData;
     [SerializeField] private EProjectileCollisionResponse collisionResponse;
     [SerializeField] private EInteractionRule interactionRule;
-    [SerializeField] private ProjectileData data = null;
 
     public ProjectileData CreateRuntimeData()
     {
-        if (data != null)
-            return data;
-
-        data = new ProjectileData(prefab, speed, collisionResponse, interactionRule);
-        return data;
+        return new ProjectileData(prefab, speed, collisionResponse, interactionRule);
     }
 }

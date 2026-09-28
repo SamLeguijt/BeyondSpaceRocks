@@ -42,7 +42,7 @@ public class ProjectileSystem : IProjectileSpawner, IUpdatable
 
     public void HandleCollision(BaseProjectile projectile, Collider2D collision)
     {
-        IProjectileTarget target = collision.gameObject.GetComponent<IProjectileTarget>();
+        IProjectileTarget target = collision.gameObject.GetComponentInParent<IProjectileTarget>();
 
         // Ignores non-target collisions
         if (target == null)  

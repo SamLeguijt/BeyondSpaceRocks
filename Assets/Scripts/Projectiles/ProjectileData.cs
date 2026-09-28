@@ -11,7 +11,6 @@ public class ProjectileData
     public Vector2 MoveDirection { get; set; }
     public float MoveSpeed { get; protected set; }
 
-
     public void ApplyModifier()
     {
         // todo: route modifiers 
