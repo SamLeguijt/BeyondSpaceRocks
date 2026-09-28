@@ -18,8 +18,6 @@ public class TimerController : MonoBehaviour
     {
         if (!timers.Contains(timer))
             timers.Add(timer);
-
-        Debug.Log("Subscribed");
     }
 
     public static void Unsubscribe(Timer timer)

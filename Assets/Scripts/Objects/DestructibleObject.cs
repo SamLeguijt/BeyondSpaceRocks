@@ -23,12 +23,7 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
         Collider.enabled = value;
     }
 
-    public virtual bool CanInteractWith(IProjectile projectile)
-    {
-        return Collider.enabled && HP.CanTakeHit(); 
-    }
-
-    public void InteractWith(IProjectile projectile) 
+    public void OnProjectileHit(BaseProjectile projectile)
     {
         ReceiveHit();
     }
@@ -59,8 +54,5 @@ public abstract class DestructibleObject : MonoBehaviour, IProjectileTarget
         Destroy(gameObject, 1f);
     }
 
-    public void OnProjectileHit(BaseProjectile projectile)
-    {
-        ReceiveHit();
-    }
+
 }

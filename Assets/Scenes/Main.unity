@@ -3425,6 +3425,9 @@ MonoBehaviour:
   currentRoundColor: {r: 0.8773585, g: 0.58281595, b: 0.045523323, a: 0.9372549}
   refillRoundColor: {r: 0, g: 0.6862745, b: 1, a: 1}
   refillCurrentRoundColor: {r: 0, g: 0.89951175, b: 0.9339623, a: 1}
+  refillFadeDelay: 0.25
+  refillFadeDuration: 0.05
+  animationRefillFadeSplit: 0.5
 --- !u!1 &1370352352
 GameObject:
   m_ObjectHideFlags: 0
@@ -4920,6 +4923,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <PlayerHealth>k__BackingField: {fileID: 1965527305}
+  <PlayerWeaponController>k__BackingField: {fileID: 1965527312}
   <ObstacleSpawner>k__BackingField: {fileID: 1603864588}
   <LaneManager>k__BackingField: {fileID: 1603864585}
   <MainCamera>k__BackingField: {fileID: 519420031}
@@ -4956,7 +4960,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1603864584}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: feaea82aa41ec464c8f5de8dafa048cf, type: 3}
   m_Name: 

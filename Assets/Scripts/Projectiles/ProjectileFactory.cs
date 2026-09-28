@@ -42,7 +42,6 @@ public class ProjectileFactory
         projectilePools[projectile] = pool;
 
         projectile.Configure(data);
-        Debug.Log("check");
         return projectile;
     }
 
