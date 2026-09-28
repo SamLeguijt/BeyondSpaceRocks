@@ -1,32 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class ProjectileSystem : IProjectileSpawner, IUpdatable
 {
-    private readonly IEventBus EventBus = null;
-    private readonly InteractionResolver InteractionResolver = null;
-    private readonly ProjectileFactory Factory = null;
+    private readonly IEventBus eventBus = null;
+    private readonly InteractionResolver interactionResolver = null;
+    private readonly ProjectileFactory factory = null;
+    private readonly Bounds playfieldBounds;
     private List<BaseProjectile> activeProjectiles = new();
-    private readonly Bounds PlayfieldBounds;
 
     public ProjectileSystem(IEventBus eventBus, Bounds playfield)
     {
         if (eventBus == null)
-            throw new System.Exception();
+            throw new System.Exception("[ProjectileSystem] Event bus is null");
 
-        EventBus = eventBus;  
-        InteractionResolver = new InteractionResolver();
-        Factory = new ProjectileFactory();
-        PlayfieldBounds = playfield;
+        this.eventBus = eventBus;  
+        playfieldBounds = playfield;
+        interactionResolver = new InteractionResolver();
+        factory = new ProjectileFactory();
     }
 
     public BaseProjectile Spawn(ProjectileData data)
     {
-        BaseProjectile projectile = Factory.Create(data);
+        BaseProjectile projectile = factory.Get(data);
         projectile.ProjectileCollisionEvent += HandleCollision;
         activeProjectiles.Add(projectile);
         projectile.Activate();
@@ -35,33 +32,35 @@ public class ProjectileSystem : IProjectileSpawner, IUpdatable
 
     public void Despawn(BaseProjectile projectile)
     {
+        if (!activeProjectiles.Contains(projectile))
+            throw new System.Exception();
+
         projectile.ProjectileCollisionEvent -= HandleCollision;
         activeProjectiles.Remove(projectile);
-        Factory.Return(projectile);
+        factory.Return(projectile);
     }
 
     public void HandleCollision(BaseProjectile projectile, Collider2D collision)
     {
         IProjectileTarget target = collision.gameObject.GetComponent<IProjectileTarget>();
 
-        // Ignores non-specified target collisions
+        // Ignores non-target collisions
         if (target == null)  
             return;
 
         // Resolves runtime game rules to decide if an interaction should occur
-        InteractionResult result = InteractionResolver.Resolve(projectile, target);
+        InteractionResult result = interactionResolver.Resolve(projectile, target);
 
         // No interaction counts as a miss; projectile hit a target, but no interaction 
         if (!result.ShouldInteract)
         {
-            EventBus.Publish(new ProjectileMissEvent(projectile));
+            eventBus.Publish(new ProjectileMissEvent(projectile));
             return; 
         }
 
         // Otherwise, projectiles hit a valid target: 
-
         target.OnProjectileHit(projectile);
-        EventBus.Publish<ProjectileHitEvent>(new ProjectileHitEvent(projectile, target));
+        eventBus.Publish(new ProjectileHitEvent(projectile, target));
         HandleProjectileCollisionResponse(projectile);
     }
 
@@ -70,14 +69,13 @@ public class ProjectileSystem : IProjectileSpawner, IUpdatable
         /// Uses the response to decide what happens to the projectile
         switch (projectile.Data.CollisionResponse)
         {
-            case EProjectileCollisionResponse.Ignore:
+            case EProjectileCollisionResponse.Ignore: 
                 break;
             case EProjectileCollisionResponse.DestroyOnImpact:
                 Despawn(projectile);
             break; 
         }   
     }
-
 
     public void Update(float deltaTime)
     {
@@ -99,15 +97,15 @@ public class ProjectileSystem : IProjectileSpawner, IUpdatable
     {
         Vector2 position = projectile.transform.position;
 
-        return position.x >= PlayfieldBounds.min.x &&
-               position.x <= PlayfieldBounds.max.x &&
-               position.y >= PlayfieldBounds.min.y &&
-               position.y <= PlayfieldBounds.max.y;
+        return position.x >= playfieldBounds.min.x &&
+               position.x <= playfieldBounds.max.x &&
+               position.y >= playfieldBounds.min.y &&
+               position.y <= playfieldBounds.max.y;
     }
 
     private void HandleOutOfBounds(BaseProjectile projectile)
     {
-        EventBus.Publish(new ProjectileExitBoundsEvent(projectile, projectile.transform.position));
+        eventBus.Publish(new ProjectileExitBoundsEvent(projectile, projectile.transform.position));
         Despawn(projectile);
     }
 }

@@ -15,6 +15,13 @@ public class MovementBehaviour : MonoBehaviour
         SetActive(!IsActive);
     }   
 
+    public void Reset()
+    {
+        SetActive(false);
+        SetDirection(Vector2.zero);
+        SetSpeed(0);
+    }
+
     public void SetActive(bool value)
     {
         IsActive = value;
